@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace DevKit.Solutions.Saves
+namespace DevKit.Saves
 {
     public class NewtonsoftSerializer : ISerializer
     {

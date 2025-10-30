@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace DevKit.Solutions.Saves
+namespace DevKit.Saves
 {
     public class FileStorage : IDataStorage
     {

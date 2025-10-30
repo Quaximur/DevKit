@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DevKit.Solutions.Saves
+namespace DevKit.Saves
 {
     public class JsonUtilitySerializer : ISerializer
     {
