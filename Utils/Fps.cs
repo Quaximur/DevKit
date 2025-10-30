@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Flopin.Utils
+namespace DevKit.Utils
 {
     public class Fps : MonoBehaviour
     {

@@ -1,4 +1,4 @@
-namespace DevKit.Solutions.UI
+namespace DevKit.UI
 {
     /// <summary>
     /// Шаблон для реализации ВСЕХ представлений.

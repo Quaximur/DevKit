@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Flopin.Utils
+namespace DevKit.Utils
 {
     [CustomPropertyDrawer(typeof(SelectorAttribute))]
     public class SelectorPropertyDrawer : PropertyDrawer

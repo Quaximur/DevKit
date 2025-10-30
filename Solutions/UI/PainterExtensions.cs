@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.UI
+namespace DevKit.UI
 {
     public static class PainterExtensions
     {

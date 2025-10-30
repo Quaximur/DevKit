@@ -1,6 +1,6 @@
 using System;
 
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Binder для связывания View с ViewModel, подразумевающий ViewModel Singleton (создающуюся только один раз).

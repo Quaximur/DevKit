@@ -1,7 +1,7 @@
 using UnityEngine.Pool;
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.UI
+namespace DevKit.UI
 {
     public class LabelsPool
     {

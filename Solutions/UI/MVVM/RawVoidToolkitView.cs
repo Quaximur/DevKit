@@ -1,6 +1,6 @@
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Чистая реализация IToolkitView без наследования от MonoBehaviour.

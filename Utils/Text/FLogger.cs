@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Debug = UnityEngine.Debug;
 
-namespace Flopin.Utils
+namespace DevKit.Utils
 {
     /// <summary>
     /// Надстройка над логгером UnityEngine.Debug с кастомизацией текста.

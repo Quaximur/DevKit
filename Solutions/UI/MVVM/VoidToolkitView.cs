@@ -1,4 +1,4 @@
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Представление, не нуждающееся во ViewModel. 

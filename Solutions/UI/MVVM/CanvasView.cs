@@ -1,4 +1,4 @@
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Представление для отображения в канвасе без привязки к ViewModel.

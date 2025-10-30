@@ -1,6 +1,6 @@
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.UI
+namespace DevKit.UI
 {
     /// <summary>
     /// Шаблон для представлений, реализованных через UI Toolkit.

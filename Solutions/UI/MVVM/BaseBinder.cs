@@ -1,6 +1,6 @@
 using System;
 
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Содержит логику для создания/уничтожения экранов UI (Открыватель/закрыватель UI)

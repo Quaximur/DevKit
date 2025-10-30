@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Базовый класс для всех виджетов, использующих UI Toolkit для архитектуры MVVM (Model-View-ViewModel).

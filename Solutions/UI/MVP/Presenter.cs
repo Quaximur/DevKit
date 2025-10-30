@@ -1,4 +1,4 @@
-namespace DevKit.Solutions.UI.MVP
+namespace DevKit.UI.MVP
 {
     public abstract class Presenter<TView> where TView : IView
     {

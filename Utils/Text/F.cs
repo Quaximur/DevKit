@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace Flopin.Utils
+namespace DevKit.Utils
 {
     /// <summary>
     /// Форматирование строк (F - Fromat).

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Flopin.Utils
+namespace DevKit.Utils
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class InspectorReadOnlyAttribute : PropertyAttribute

@@ -1,6 +1,6 @@
 using System;
 
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Возможный базовый класс для ViewModel (просто реализующий IDisposable)

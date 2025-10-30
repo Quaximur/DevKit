@@ -3,7 +3,7 @@ using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.UI.MVP
+namespace DevKit.UI.MVP
 {
     public abstract class ToolkitView : MonoBehaviour, IToolkitView, IDisposable
     {

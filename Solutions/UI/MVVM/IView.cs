@@ -1,6 +1,6 @@
 using System;
 
-namespace DevKit.Solutions.UI.MVVM
+namespace DevKit.UI.MVVM
 {
     /// <summary>
     /// Шаблон для реализации представлений, имеющих связь с некоторой ViewModel.

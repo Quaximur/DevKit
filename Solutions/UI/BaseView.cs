@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using R3;
 
-namespace DevKit.Solutions.UI
+namespace DevKit.UI
 {
     /// <summary>
     /// Базовая реализация представления через MonoBehaviour.
