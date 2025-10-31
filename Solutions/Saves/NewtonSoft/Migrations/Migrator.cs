@@ -3,7 +3,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Inui.Core.Providers.SaveState.Migrations
+namespace DevKit.Saves.Migrations
 {
     /// <summary>
     /// Класс для миграции сохраненных данных. 

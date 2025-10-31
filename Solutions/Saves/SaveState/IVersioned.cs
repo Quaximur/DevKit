@@ -1,4 +1,4 @@
-namespace Inui.Core.Providers.SaveState
+namespace DevKit.Saves
 {
     public interface IVersioned
     {

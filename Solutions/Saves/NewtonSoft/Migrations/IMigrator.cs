@@ -1,5 +1,5 @@
 #if NEWTONSOFT_JSON
-namespace Inui.Core.Providers.SaveState.Migrations
+namespace DevKit.Saves.Migrations
 {
     public interface IMigrator
     {

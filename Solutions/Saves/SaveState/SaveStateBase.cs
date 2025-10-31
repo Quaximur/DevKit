@@ -1,4 +1,4 @@
-namespace Inui.Core.Providers.SaveState
+namespace DevKit.Saves
 {
     /// <summary>
     /// Общий класс для различных версий состояний приложения.
