@@ -1,0 +1,10 @@
+{
+  "name": "flopin.devkit",
+  "displayName": "DevKit",
+  "version": "0.1",
+  "description": "Unity C# utils",
+  "dependencies": {
+    "com.cysharp.r3": "1.0.0"
+  },
+  "unity": "6000.49"
+}
