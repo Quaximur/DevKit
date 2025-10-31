@@ -1,3 +1,4 @@
+#if NEWTONSOFT_JSON
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -47,3 +48,4 @@ namespace Inui.Core.Providers.SaveState.Migrations
         }
     }
 }
+#endif

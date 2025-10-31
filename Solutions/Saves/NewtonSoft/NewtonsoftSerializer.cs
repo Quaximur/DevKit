@@ -1,3 +1,4 @@
+#if NEWTONSOFT_JSON
 using Newtonsoft.Json;
 
 namespace DevKit.Saves
@@ -15,3 +16,4 @@ namespace DevKit.Saves
         }
     }
 }
+#endif

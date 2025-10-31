@@ -1,3 +1,4 @@
+#if NEWTONSOFT_JSON
 using Newtonsoft.Json.Linq;
 
 namespace Inui.Core.Providers.SaveState.Migrations
@@ -8,3 +9,4 @@ namespace Inui.Core.Providers.SaveState.Migrations
         public JObject Migrate(JObject dataObject);
     }
 }
+#endif

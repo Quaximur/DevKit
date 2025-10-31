@@ -1,3 +1,4 @@
+#if NEWTONSOFT_JSON
 namespace Inui.Core.Providers.SaveState.Migrations
 {
     public interface IMigrator
@@ -5,3 +6,4 @@ namespace Inui.Core.Providers.SaveState.Migrations
         public bool TryMigrateIfNecessary<T>(string loadedData, out T upToDateData) where T : SaveStateBase;
     }
 }
+#endif
