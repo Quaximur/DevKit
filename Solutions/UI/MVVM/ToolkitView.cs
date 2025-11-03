@@ -17,7 +17,7 @@ namespace DevKit.UI.MVVM
         /// <summary>
         /// Доступ к корневому элементу из VisualTreeAsset _uiAsset.
         /// </summary>
-        protected VisualElement Root { get; private set; }
+        public VisualElement Root { get; private set; }
 
         /// <summary>
         /// Публичный метод для инициализации View.
