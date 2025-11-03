@@ -12,7 +12,7 @@ namespace DevKit.UI.MVVM
         [SerializeField] private RectTransform _canvasFirstUiRoot;
         [SerializeField] private RectTransform _canvasLastUiRoot;
         [SerializeField] private string _visualElementRootName;
-        
+
         private VisualElement _visualElementRoot;
         private readonly HashSet<IAttachableView> _bindedViews = new();
 
@@ -69,8 +69,9 @@ namespace DevKit.UI.MVVM
 #region MonoBehaviour
         private void Awake()
         {
-            _visualElementRoot = _document.rootVisualElement.Q(name: _visualElementRootName);
-            _firstCanvas.gameObject.SetActive(false);
+            _visualElementRoot = _document.rootVisualElement.Q(name: _visualElementRootName) ??
+                                 _document.rootVisualElement;
+            // _firstCanvas.gameObject.SetActive(false);
         }
 #endregion
 

@@ -17,6 +17,7 @@ namespace DevKit.UI.MVVM
         void IAttachableView.Detach(IRootUI rootUI)
         {
             Dispose();
+            rootUI.Detach(Root);
             rootUI.Detach(gameObject);
         }
     }
