@@ -1,4 +1,4 @@
-#if NEWTONSOFT_JSON
+#if INUI_NEWTONSOFT_JSON
 namespace DevKit.Saves.Migrations
 {
     public interface IMigrator

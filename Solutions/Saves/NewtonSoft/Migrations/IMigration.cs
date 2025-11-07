@@ -1,4 +1,4 @@
-#if NEWTONSOFT_JSON
+#if INUI_NEWTONSOFT_JSON
 using Newtonsoft.Json.Linq;
 
 namespace DevKit.Saves.Migrations
