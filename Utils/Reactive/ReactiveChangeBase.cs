@@ -1,7 +1,7 @@
 using System;
 using R3;
 
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     public abstract class ReactiveChangeBase<T> : ReactiveProperty<T>, IReactiveChange
     {

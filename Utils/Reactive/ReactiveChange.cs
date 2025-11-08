@@ -1,6 +1,6 @@
 using System;
 
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     /// <summary>
     /// После применения изменений текущее значение заносится в кэш, 

@@ -2,7 +2,7 @@ using System;
 using R3;
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     public static class VisualElementsExtensions
     {

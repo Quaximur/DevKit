@@ -1,6 +1,6 @@
 using System;
 
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     /// <summary>
     /// После применения изменений вызывает действие applyAction.
