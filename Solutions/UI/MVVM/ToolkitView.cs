@@ -37,7 +37,12 @@ namespace DevKit.UI.MVVM
         private void Init()
         {
             Root = UxmlUtil.CloneStyled(_uiAsset);
+            ApplyRootStyle(Root);
             OnInit();
+        }
+
+        protected virtual void ApplyRootStyle(VisualElement root)
+        {
         }
 
         /// <summary>

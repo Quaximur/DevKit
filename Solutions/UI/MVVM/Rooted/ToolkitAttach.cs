@@ -6,9 +6,9 @@ namespace DevKit.UI.MVVM
     {
         VisualElement IAttachableToolkitView.Root => Root;
 
-        protected override void OnInit()
+        protected override void ApplyRootStyle(VisualElement root)
         {
-            UxmlUtil.StyleAttachable(Root);
+            UxmlUtil.StyleAttachable(root);
         }
     }
     
@@ -16,9 +16,9 @@ namespace DevKit.UI.MVVM
     {
         VisualElement IAttachableToolkitView.Root => Root;
         
-        protected override void OnInit()
+        protected override void ApplyRootStyle(VisualElement root)
         {
-            UxmlUtil.StyleAttachable(Root);
+            UxmlUtil.StyleAttachable(root);
         }
     }
 }
