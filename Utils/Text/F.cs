@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace DevKit.Utils
 {
     /// <summary>
-    /// Форматирование строк (F - Fromat).
+    /// Форматирование строк (F - Format).
     /// </summary>
     public static class F
     {
