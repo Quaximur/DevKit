@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Flofin.Utils
+namespace DevKit.Utils
 {
     /// <summary>
     /// Позволяет выбрать значение из заданного набора строк.
