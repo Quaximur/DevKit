@@ -3,7 +3,7 @@ using System;
 namespace DevKit.UI.MVVM.Bases
 {
     public class LazyAttachBinder<TView, TViewModel> : AttachBinder<TView, TViewModel>
-        where TView : ScreenToolkitAttach<TViewModel>
+        where TView : BaseView, IScreenAttach<TViewModel> 
         where TViewModel : ScreenViewModel
     {
         private readonly Func<TViewModel> _viewModelFactory;
@@ -14,6 +14,6 @@ namespace DevKit.UI.MVVM.Bases
             _viewModelFactory = viewModelFactory;
         }
 
-        public override TViewModel GetViewModel() => _viewModelFactory();
+        protected override TViewModel GetViewModel() => _viewModelFactory();
     }
 }

@@ -1,10 +1,9 @@
-using System;
 using R3;
 
 namespace DevKit.UI.MVVM.Bases
 {
     public abstract class AttachBinder<TView, TViewModel> : AttachBinder<TView, TViewModel, TViewModel>
-        where TView : ScreenToolkitAttach<TViewModel>
+        where TView : BaseView, IScreenAttach<TViewModel> 
         where TViewModel : ScreenViewModel
     {
         protected AttachBinder(IRootUIBinder rootUIBinder, TView view) : base(rootUIBinder, view)
@@ -13,7 +12,7 @@ namespace DevKit.UI.MVVM.Bases
     }
 
     public abstract class AttachBinder<TView, TViewModel, AViewModel> : BaseBinder<TView, TViewModel, AViewModel>
-        where TView : ScreenToolkitAttach<AViewModel> 
+        where TView : BaseView, IScreenAttach<AViewModel> 
         where TViewModel : AViewModel
         where AViewModel :ScreenViewModel
     {
@@ -24,7 +23,7 @@ namespace DevKit.UI.MVVM.Bases
             _rootUIBinder = rootUIBinder;
         }
         
-        public abstract TViewModel GetViewModel();
+        protected abstract TViewModel GetViewModel();
         
         public override void Open()
         {
@@ -34,7 +33,7 @@ namespace DevKit.UI.MVVM.Bases
             _currentViewModel = GetViewModel();
             
             var viewInstance = UnityEngine.Object.Instantiate(_view);
-            _ = viewInstance.InitAndGetRoot();
+            viewInstance.Init();
             viewInstance.Bind(_currentViewModel);
 
             _currentViewModel.OnClosingCompleted.Subscribe(_ => _rootUIBinder.ClearView(viewInstance));

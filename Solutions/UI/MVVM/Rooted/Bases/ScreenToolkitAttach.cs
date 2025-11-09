@@ -2,7 +2,7 @@ using R3;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class ScreenToolkitAttach<T> : ToolkitAttach<T> where T : ScreenViewModel
+    public abstract class ScreenToolkitAttach<T> : ToolkitAttach<T>, IScreenAttach<T> where T : ScreenViewModel
     {
         protected CompositeDisposable _disposables;
 

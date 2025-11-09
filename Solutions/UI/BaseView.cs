@@ -13,7 +13,13 @@ namespace DevKit.UI
         public Observable<Unit> OnDisposed => _onDisposed;
         public Subject<Unit> _onDisposed = new();
 
+        public virtual void Init()
+        {
+            
+        }
+        
         public abstract void Show();
+        
         public abstract void Hide();
 
         public virtual void Dispose()
