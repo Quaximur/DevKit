@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System.Collections.Generic;
 
 namespace DevKit.Utils.Editor
 {
@@ -11,22 +12,52 @@ namespace DevKit.Utils.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var root = new VisualElement();
-            var foldout = new Foldout { text = property.displayName };
-            root.Add(foldout);
 
             var listProperty = property.FindPropertyRelative("_lockedItems");
-            if (listProperty != null && listProperty.isArray)
+            if (listProperty == null || !listProperty.isArray)
             {
-                for (var i = 0; i < listProperty.arraySize; i++)
-                {
-                    var elementProp = listProperty.GetArrayElementAtIndex(i);
-                    var field = new PropertyField(elementProp);
-                    field.SetEnabled(true);
-                    foldout.Add(field);
-                }
+                var errorLabel = new Label("List property '_lockedItems' not found");
+                root.Add(errorLabel);
+                return root;
             }
 
+            var listView = new ListView
+            {
+                headerTitle = property.displayName,
+                showFoldoutHeader = true,
+                showAddRemoveFooter = false,
+                showBorder = true,
+                reorderable = false,
+                selectionType = SelectionType.None,
+                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
+                fixedItemHeight = 24,
+                showBoundCollectionSize = true,
+                itemsSource = GetItemsSource(listProperty),
+
+                makeItem = () => new PropertyField(),
+                bindItem = (element, index) =>
+                {
+                    if (element is PropertyField propertyField && listProperty.arraySize > index)
+                    {
+                        var elementProp = listProperty.GetArrayElementAtIndex(index);
+                        propertyField.BindProperty(elementProp);
+                        propertyField.SetEnabled(true);
+                    }
+                }
+            };
+            listView.Q<TextField>(name: BaseListView.arraySizeFieldUssClassName)?.SetEnabled(false);
+
+            root.Add(listView);
             return root;
+        }
+
+        private List<SerializedProperty> GetItemsSource(SerializedProperty listProperty)
+        {
+            var items = new List<SerializedProperty>();
+            for (var i = 0; i < listProperty.arraySize; i++)
+                items.Add(listProperty.GetArrayElementAtIndex(i));
+
+            return items;
         }
     }
 }
