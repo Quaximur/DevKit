@@ -1,4 +1,4 @@
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     public interface IReactiveChange
     {

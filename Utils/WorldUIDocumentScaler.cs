@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     [ExecuteAlways]
     [RequireComponent(typeof(UIDocument))]

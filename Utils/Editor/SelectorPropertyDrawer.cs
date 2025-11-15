@@ -2,12 +2,11 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Flofin.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevKit.Utils
+namespace DevKit.Utils.Editor
 {
     [CustomPropertyDrawer(typeof(SelectorAttribute))]
     public class SelectorPropertyDrawer : PropertyDrawer

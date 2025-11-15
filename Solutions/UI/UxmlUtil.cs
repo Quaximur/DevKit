@@ -13,6 +13,19 @@ namespace DevKit.UI
             return root;
         }
 
+        public static VisualElement StyleAttachable(VisualElement root)
+        {
+            var styles = root.style;
+            
+            styles.position = Position.Absolute;
+            styles.left = 0;
+            styles.right = 0;
+            styles.top = 0;
+            styles.bottom = 0;
+            
+            return root;
+        }
+
         public static void Show(VisualElement element)
         {
             element.style.display = DisplayStyle.Flex;

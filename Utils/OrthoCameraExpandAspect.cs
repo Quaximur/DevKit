@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DevKit.Solutions.Utils
+namespace DevKit.Utils
 {
     [ExecuteAlways]
     [RequireComponent(typeof(Camera))]

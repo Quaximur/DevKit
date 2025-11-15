@@ -5,7 +5,7 @@ namespace DevKit.UI.MVVM
     /// <summary>
     /// Binder для связывания View с ViewModel, подразумевающий ViewModel Transient (создаётся каждый раз при открытии).
     /// Здесь указывается TViewModel, с которой работает View. Чтобы работать с конкретной ViewModel,
-    /// а не с абстрактной (если так указано во View, пр.: View<IViewModel>), используйте класс с расширенными
+    /// а не с абстрактной (если так указано во View, пр.: <see cref="View{IViewModel}"/>), используйте класс с расширенными
     /// generic-параметрами (с разделением типов ViewModel на конкретный (который мы хотим передать View) и абстрактный
     /// (который требует View)).
     /// </summary>
@@ -20,7 +20,7 @@ namespace DevKit.UI.MVVM
 
     /// <summary>
     /// Binder для связывания View с ViewModel, подразумевающий ViewModel Transient (создаётся каждый раз при открытии).
-    /// Здесь View может иметь зависимость от абстрактной AViewModel (Пр.: IView<AViewModel>),
+    /// Здесь View может иметь зависимость от абстрактной AViewModel (Пр.: <see cref="IView{AViewModel}"/>),
     /// при этом в реальности быть связана с конкретной TViewModel, реализующей/наследуемой от
     /// AViewModel (where AViewModel : IViewModel)
     /// </summary>

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Flofin.Utils
+namespace DevKit.Utils
 {
     public static class ScreenUtil
     {

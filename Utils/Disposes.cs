@@ -24,6 +24,15 @@ public static class Disposes
         }
     }
 
+    public static void ResetDispose<T>(ref T disposable) where T : IDisposable, new()
+    {
+        if (disposable != null)
+        {
+            disposable.Dispose();
+            disposable = new();
+        }
+    }
+
     public static IDisposable Subscribe<T>(Action<T> source, Action<T> handler)
     {
         source += handler;

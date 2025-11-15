@@ -34,10 +34,15 @@ namespace DevKit.UI.MVVM
         /// <summary>
         /// Базовая инициализация UI.
         /// </summary>
-        private void Init()
+        public override sealed void Init()
         {
             Root = UxmlUtil.CloneStyled(_uiAsset);
+            ApplyRootStyle(Root);
             OnInit();
+        }
+
+        protected virtual void ApplyRootStyle(VisualElement root)
+        {
         }
 
         /// <summary>
