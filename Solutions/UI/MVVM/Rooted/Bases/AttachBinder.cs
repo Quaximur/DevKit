@@ -36,7 +36,7 @@ namespace DevKit.UI.MVVM.Bases
             viewInstance.Init();
             viewInstance.Bind(_currentViewModel);
 
-            _currentViewModel.OnClosingCompleted.Subscribe(_ => _rootUIBinder.ClearView(viewInstance));
+            _currentViewModel.OnClosingCompleted.Take(1).Subscribe(_ => _rootUIBinder.ClearView(viewInstance));
             viewInstance.OnDisposed.Take(1).Subscribe(_ =>
             {
                 _currentViewModel?.Dispose();
