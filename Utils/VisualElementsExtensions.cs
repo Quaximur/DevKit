@@ -19,5 +19,15 @@ namespace DevKit.Utils
             element.RegisterCallback<TEventType, TUserArgs>(callback, userArgs, trickleDown);
             return Disposable.Create(() => element.UnregisterCallback<TEventType, TUserArgs>(callback, trickleDown));
         }
+
+        public static VisualElement GetFirstOfTypeWithUserData<T>(this VisualElement ve)
+        {
+            while (ve != null)
+            {
+                if (ve.userData is T) return ve;
+                ve = ve.parent;
+            }
+            return null;
+        }
     }
 }
