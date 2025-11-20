@@ -21,17 +21,23 @@ namespace DevKit.UITK
         private T _draggedItem;
         private bool _isDragging;
         private Vector2 _dragStartPosition;
+        private VisualElement _dropIndicator;
+        private DropPosition _currentDropPosition;
         private const float DRAG_THRESHOLD = 5f;
+        private readonly Func<T, VisualElement> _getLinedElement;
 
         public DragAndDropController(
             VisualElement root,
             VisualElement dropContainer,
-            Func<T, T, bool> validation)
+            Func<T, T, bool> validation,
+            Func<T, VisualElement> getLinedElement)
         {
             _root = root;
             _dropContainer = dropContainer;
             _validation = validation;
+            _getLinedElement = getLinedElement;
             CreateDragGhost();
+            CreateDropIndicator();
             RegisterEventHandlers();
         }
 
@@ -47,6 +53,21 @@ namespace DevKit.UITK
             _dragGhost.style.display = DisplayStyle.None;
 
             _root.Add(_dragGhost);
+        }
+
+        private void CreateDropIndicator()
+        {
+            _dropIndicator = new VisualElement();
+            _dropIndicator.AddToClassList("drop-indicator");
+            _dropIndicator.style.display = DisplayStyle.None;
+
+            // Стили для линии-индикатора
+            _dropIndicator.style.position = Position.Absolute;
+            _dropIndicator.style.height = 2f;
+            _dropIndicator.style.backgroundColor = new Color(0f, 0.7f, 1f, 1f); // Синий цвет
+            // _dropIndicator.style.zIndex = 9999;
+
+            _root.Add(_dropIndicator);
         }
 
         private void RegisterEventHandlers()
@@ -106,7 +127,7 @@ namespace DevKit.UITK
                 }
             }
 
-            if (!_isDragging) 
+            if (!_isDragging)
                 return;
 
             _dragGhost.style.left = evt.position.x + 5;
@@ -127,6 +148,7 @@ namespace DevKit.UITK
             else if (picked == _dropContainer)
             {
                 _dropTargetElement = picked;
+                ClearDropIndicators();
                 return;
             }
 
@@ -137,7 +159,6 @@ namespace DevKit.UITK
                 return;
             }
 
-            // Now: container.userData != null
             if (container.userData is not T targetItem)
                 targetItem = default;
 
@@ -148,6 +169,12 @@ namespace DevKit.UITK
             }
 
             _dropTargetElement = container;
+            var linedElement = _getLinedElement(targetItem);
+
+            if (linedElement == null)
+                ClearDropIndicators();
+            else
+                ShowElementIndicator(linedElement, mousePosition);
 
             void SetTargetToNothing()
             {
@@ -155,9 +182,35 @@ namespace DevKit.UITK
             }
         }
 
+        private void ShowElementIndicator(VisualElement targetElement, Vector2 mousePosition)
+        {
+            var worldBound = targetElement.worldBound;
+            var centerY = worldBound.center.y;
+
+            // Определяем позицию вставки (до или после элемента)
+            if (mousePosition.y >= centerY)
+            {
+                _currentDropPosition = DropPosition.After;
+                ShowLineIndicator(worldBound.x + 2f, worldBound.yMax - worldBound.height + 2f, worldBound.xMax - 2f);
+            }
+            if (mousePosition.y < centerY)
+            {
+                _currentDropPosition = DropPosition.Before;
+                ShowLineIndicator(worldBound.x + 2f, worldBound.y - worldBound.height, worldBound.xMax - 2f);
+            }
+        }
+
+        private void ShowLineIndicator(float x, float y, float xMax)
+        {
+            _dropIndicator.style.left = x;
+            _dropIndicator.style.top = y;
+            _dropIndicator.style.width = xMax - x;
+            _dropIndicator.style.display = DisplayStyle.Flex;
+        }
+
         private void ClearDropIndicators()
         {
-            // Реализация очистки индикаторов drop
+            _dropIndicator.style.display = DisplayStyle.None;
         }
 
         private void EndDrag(PointerUpEvent evt)
@@ -177,9 +230,6 @@ namespace DevKit.UITK
                 return;
             }
 
-            _dragGhost.style.display = DisplayStyle.None;
-            ClearDropIndicators();
-
             if (_dropTargetElement != null)
             {
                 if (_dropTargetElement.userData == null || _dropTargetElement.userData is not T targetItem)
@@ -189,7 +239,8 @@ namespace DevKit.UITK
                 {
                     Dragged = _draggedItem,
                     Target = targetItem,
-                    PointerPosition = pointerPos
+                    PointerPosition = pointerPos,
+                    DropPosition = _currentDropPosition
                 });
             }
 
@@ -198,6 +249,9 @@ namespace DevKit.UITK
             _draggedItem = default;
             _dropTargetElement = null;
             _isDragging = false;
+
+            _dragGhost.style.display = DisplayStyle.None;
+            ClearDropIndicators();
         }
 
         public bool IsItemsEqual(T item1, T item2)
