@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using DevKit.Utils;
 using UnityEngine;
@@ -26,6 +25,7 @@ namespace DevKit.UITK
         private VisualElement _dropIndicator;
         private DropPosition _currentDropPosition;
         private const float DRAG_THRESHOLD = 5f;
+        private const float DROP_TARGET_SIDE_ZONE_RATIO = 0.25f;
         private readonly Func<T, VisualElement> _getLinedElement;
         private readonly Func<T, bool> _isGroupElement;
         private readonly Func<T, bool> _isExpanded;
@@ -38,7 +38,6 @@ namespace DevKit.UITK
             Center,
             Bottom
         }
-
 
         public DragAndDropController(
             VisualElement root,
@@ -84,12 +83,7 @@ namespace DevKit.UITK
             };
             _dropIndicator.AddToClassList("drop-indicator");
             _dropIndicator.style.display = DisplayStyle.None;
-
-            // Стили для линии-индикатора
             _dropIndicator.style.position = Position.Absolute;
-            _dropIndicator.style.height = 2f;
-            _dropIndicator.style.backgroundColor = new Color(0f, 0.7f, 1f, 1f); // Синий цвет
-            // _dropIndicator.style.zIndex = 9999;
 
             _root.Add(_dropIndicator);
         }
@@ -190,8 +184,8 @@ namespace DevKit.UITK
 
             _dropTargetElement = container;
             var linedElement = _getLinedElement(targetItem);
-
-            ShowElementIndicator(linedElement, targetItem, mousePosition);
+            if (linedElement != null)
+                ShowElementIndicator(linedElement, targetItem, mousePosition);
 
             if (ShouldStartGroupExpand(targetItem))
                 OnGroupHoverStart?.Invoke(targetItem);
@@ -216,18 +210,18 @@ namespace DevKit.UITK
         private DropZone GetDropZone(VisualElement element, Vector2 mousePosition, T targetItem)
         {
             var worldBound = element.worldBound;
-            float elementHeight = worldBound.height;
-            float relativeY = mousePosition.y - worldBound.y;
+            var elementHeight = worldBound.height;
+            var relativeY = mousePosition.y - worldBound.y;
 
-            // Определяем зоны (верхняя 25%, центральная 50%, нижняя 25%)
-            float topZoneHeight = elementHeight * 0.25f;
-            float bottomZoneHeight = elementHeight * 0.25f;
+            // Определяем зоны (верхняя DROP_TARGET_SIDE_ZONE_RATIO, центральная 1 - 2 * DROP_TARGET_SIDE_ZONE_RATIO, 
+            // нижняя DROP_TARGET_SIDE_ZONE_RATIO)
+            var topZoneHeight = elementHeight * DROP_TARGET_SIDE_ZONE_RATIO;
+            var bottomZoneHeight = elementHeight * DROP_TARGET_SIDE_ZONE_RATIO;
 
-            bool isGroup = _isGroupElement != null && _isGroupElement(targetItem);
-            bool isExpanded = isGroup && _isExpanded != null && _isExpanded(targetItem);
+            var isGroup = _isGroupElement != null && _isGroupElement(targetItem);
+            var isExpanded = isGroup && _isExpanded != null && _isExpanded(targetItem);
             var hasChildren = isGroup && _hasChildren(targetItem);
 
-            // Для развернутой группы нижняя часть работает как центр
             if (!isGroup)
             {
                 // Для обычных элементов и свернутых групп
@@ -284,8 +278,6 @@ namespace DevKit.UITK
         private void ShowLineIndicator(float x, float y, float xMax)
         {
             _dropIndicator.transform.position = new Vector3(x, y, 0);
-            // _dropIndicator.style.left = x;
-            // _dropIndicator.style.top = y;
             _dropIndicator.style.width = xMax - x;
             _dropIndicator.style.display = DisplayStyle.Flex;
         }
