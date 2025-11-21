@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DevKit.Utils;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace DevKit.UITK
     {
         public event Action<DropData<T>> OnItemDropped;
         public event Action<T> OnItemDragStart;
+        public event Action<T> OnGroupHoverStart;
 
         private readonly VisualElement _root;
         private readonly VisualElement _dropContainer;
@@ -25,17 +27,36 @@ namespace DevKit.UITK
         private DropPosition _currentDropPosition;
         private const float DRAG_THRESHOLD = 5f;
         private readonly Func<T, VisualElement> _getLinedElement;
+        private readonly Func<T, bool> _isGroupElement;
+        private readonly Func<T, bool> _isExpanded;
+        private readonly Func<T, bool> _hasChildren;
+
+        // Для определения зон внутри элемента
+        private enum DropZone
+        {
+            Top,
+            Center,
+            Bottom
+        }
+
 
         public DragAndDropController(
             VisualElement root,
             VisualElement dropContainer,
             Func<T, T, bool> validation,
-            Func<T, VisualElement> getLinedElement)
+            Func<T, VisualElement> getLinedElement,
+            Func<T, bool> isGroupElement,
+            Func<T, bool> isExpanded,
+            Func<T, bool> hasChildren)
         {
             _root = root;
             _dropContainer = dropContainer;
             _validation = validation;
             _getLinedElement = getLinedElement;
+            _isGroupElement = isGroupElement;
+            _isExpanded = isExpanded;
+            _hasChildren = hasChildren;
+
             CreateDragGhost();
             CreateDropIndicator();
             RegisterEventHandlers();
@@ -57,7 +78,10 @@ namespace DevKit.UITK
 
         private void CreateDropIndicator()
         {
-            _dropIndicator = new VisualElement();
+            _dropIndicator = new VisualElement
+            {
+                pickingMode = PickingMode.Ignore
+            };
             _dropIndicator.AddToClassList("drop-indicator");
             _dropIndicator.style.display = DisplayStyle.None;
 
@@ -148,19 +172,15 @@ namespace DevKit.UITK
             else if (picked == _dropContainer)
             {
                 _dropTargetElement = picked;
-                ClearDropIndicators();
                 return;
             }
 
             var container = picked.GetFirstOfTypeWithUserData<T>();
-            if (container == null)
+            if (container == null || container.userData is not T targetItem)
             {
                 SetTargetToNothing();
                 return;
             }
-
-            if (container.userData is not T targetItem)
-                targetItem = default;
 
             if (!_validation(_draggedItem, targetItem))
             {
@@ -171,39 +191,101 @@ namespace DevKit.UITK
             _dropTargetElement = container;
             var linedElement = _getLinedElement(targetItem);
 
-            if (linedElement == null)
-                ClearDropIndicators();
-            else
-                ShowElementIndicator(linedElement, mousePosition);
+            ShowElementIndicator(linedElement, targetItem, mousePosition);
 
-            void SetTargetToNothing()
+            if (ShouldStartGroupExpand(targetItem))
+                OnGroupHoverStart?.Invoke(targetItem);
+        }
+
+        private void SetTargetToNothing()
+        {
+            _dropTargetElement = null;
+            _currentDropPosition = DropPosition.After;
+        }
+
+        private bool ShouldStartGroupExpand(T targetItem)
+        {
+            if (_isGroupElement == null || _isExpanded == null || _hasChildren == null) return false;
+
+            return _isGroupElement(targetItem) &&
+                   !_isExpanded(targetItem) &&
+                   _hasChildren(targetItem) &&
+                   _currentDropPosition == DropPosition.Inside;
+        }
+
+        private DropZone GetDropZone(VisualElement element, Vector2 mousePosition, T targetItem)
+        {
+            var worldBound = element.worldBound;
+            float elementHeight = worldBound.height;
+            float relativeY = mousePosition.y - worldBound.y;
+
+            // Определяем зоны (верхняя 25%, центральная 50%, нижняя 25%)
+            float topZoneHeight = elementHeight * 0.25f;
+            float bottomZoneHeight = elementHeight * 0.25f;
+
+            bool isGroup = _isGroupElement != null && _isGroupElement(targetItem);
+            bool isExpanded = isGroup && _isExpanded != null && _isExpanded(targetItem);
+            var hasChildren = isGroup && _hasChildren(targetItem);
+
+            // Для развернутой группы нижняя часть работает как центр
+            if (!isGroup)
             {
-                _dropTargetElement = null;
+                // Для обычных элементов и свернутых групп
+                if (mousePosition.y < worldBound.center.y)
+                    return DropZone.Top;
+                else
+                    return DropZone.Bottom;
+            }
+            else
+            {
+                if (!isExpanded || !hasChildren)
+                {
+                    if (relativeY < topZoneHeight)
+                        return DropZone.Top;
+                    else if (relativeY > elementHeight - bottomZoneHeight)
+                        return DropZone.Bottom;
+                    else
+                        return DropZone.Center;
+                }
+                else
+                {
+                    if (relativeY < topZoneHeight)
+                        return DropZone.Top;
+                    else
+                        return DropZone.Center; // Нижняя часть развернутой группы = поместить внутрь
+                }
             }
         }
 
-        private void ShowElementIndicator(VisualElement targetElement, Vector2 mousePosition)
+        private void ShowElementIndicator(VisualElement targetElement, T targetItem, Vector2 mousePosition)
         {
             var worldBound = targetElement.worldBound;
-            var centerY = worldBound.center.y;
+            var dropZone = GetDropZone(targetElement, mousePosition, targetItem);
+            var lineX = worldBound.x + 2f;
+            var lineWidth = worldBound.xMax - 2f;
 
-            // Определяем позицию вставки (до или после элемента)
-            if (mousePosition.y >= centerY)
+            switch (dropZone)
             {
-                _currentDropPosition = DropPosition.After;
-                ShowLineIndicator(worldBound.x + 2f, worldBound.yMax - worldBound.height + 2f, worldBound.xMax - 2f);
-            }
-            if (mousePosition.y < centerY)
-            {
-                _currentDropPosition = DropPosition.Before;
-                ShowLineIndicator(worldBound.x + 2f, worldBound.y - worldBound.height, worldBound.xMax - 2f);
+                case DropZone.Top:
+                    _currentDropPosition = DropPosition.Before;
+                    ShowLineIndicator(lineX, worldBound.y - worldBound.height, lineWidth);
+                    break;
+                case DropZone.Bottom:
+                    _currentDropPosition = DropPosition.After;
+                    ShowLineIndicator(lineX, worldBound.yMax - worldBound.height, lineWidth);
+                    break;
+                case DropZone.Center:
+                    _currentDropPosition = DropPosition.Inside;
+                    ClearDropIndicators();
+                    break;
             }
         }
 
         private void ShowLineIndicator(float x, float y, float xMax)
         {
-            _dropIndicator.style.left = x;
-            _dropIndicator.style.top = y;
+            _dropIndicator.transform.position = new Vector3(x, y, 0);
+            // _dropIndicator.style.left = x;
+            // _dropIndicator.style.top = y;
             _dropIndicator.style.width = xMax - x;
             _dropIndicator.style.display = DisplayStyle.Flex;
         }
