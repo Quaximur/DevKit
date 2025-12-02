@@ -277,7 +277,8 @@ namespace DevKit.UITK
 
         private void ShowLineIndicator(float x, float y, float xMax)
         {
-            _dropIndicator.style.translate = new Vector3(x, y, 0);
+            _dropIndicator.style.translate = new Translate(x, y);
+            _dropIndicator.transform.position = new Vector3(x, y, 0);
             _dropIndicator.style.width = xMax - x;
             _dropIndicator.style.display = DisplayStyle.Flex;
         }
