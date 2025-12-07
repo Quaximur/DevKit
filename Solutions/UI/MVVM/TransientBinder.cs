@@ -35,11 +35,13 @@ namespace DevKit.UI.MVVM
 
         protected abstract TViewModel GetViewModel();
 
-        public override void Open()
+        public override AViewModel Open()
         {
             _currentViewModel = GetViewModel();
             _view.Bind(_currentViewModel);
             _view.Show();
+            
+            return _currentViewModel;
         }
 
         public override void Close()

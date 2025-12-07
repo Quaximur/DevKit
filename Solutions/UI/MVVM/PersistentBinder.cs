@@ -36,10 +36,12 @@ namespace DevKit.UI.MVVM
             _persistentViewModel = viewModel;
         }
 
-        public override void Open()
+        public override AViewModel Open()
         {
             _view.Bind(_persistentViewModel);
             _view.Show();
+            
+            return _persistentViewModel;
         }
 
         public override void Close()

@@ -25,10 +25,10 @@ namespace DevKit.UI.MVVM.Bases
         
         protected abstract TViewModel GetViewModel();
         
-        public override void Open()
+        public override AViewModel Open()
         {
             if (_currentViewModel != null) // if already exists
-                return;
+                return _currentViewModel;
 
             _currentViewModel = GetViewModel();
             
@@ -45,6 +45,8 @@ namespace DevKit.UI.MVVM.Bases
 
             _rootUIBinder.AddView(viewInstance);
             _currentViewModel.Open();
+            
+            return _currentViewModel;
         }
 
         public override void Close()

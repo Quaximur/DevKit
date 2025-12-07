@@ -1,8 +1,8 @@
 namespace DevKit.UI.MVVM
 {
-    public interface IViewBinder<TView>
+    public interface IViewBinder<TViewModel> where TViewModel : IViewModel
     {
-        public void Open();
+        public TViewModel Open();
         public void Close();
     }
 }
