@@ -27,6 +27,7 @@ namespace DevKit.UITK
         private const float DRAG_THRESHOLD = 5f;
         private const float DROP_TARGET_SIDE_ZONE_RATIO = 0.25f;
         private readonly Func<T, VisualElement> _getLinedElement;
+        private readonly Func<T, VisualElement> _getDropZoneElement;
         private readonly Func<T, bool> _isGroupElement;
         private readonly Func<T, bool> _isExpanded;
         private readonly Func<T, bool> _hasChildren;
@@ -35,7 +36,8 @@ namespace DevKit.UITK
         private enum DropZone
         {
             Top,
-            Center,
+            CenterInside,
+            CenterBottom,
             Bottom
         }
 
@@ -44,6 +46,7 @@ namespace DevKit.UITK
             VisualElement dropContainer,
             Func<T, T, bool> validation,
             Func<T, VisualElement> getLinedElement,
+            Func<T, VisualElement> getDropZoneElement,
             Func<T, bool> isGroupElement,
             Func<T, bool> isExpanded,
             Func<T, bool> hasChildren)
@@ -52,6 +55,7 @@ namespace DevKit.UITK
             _dropContainer = dropContainer;
             _validation = validation;
             _getLinedElement = getLinedElement;
+            _getDropZoneElement = getDropZoneElement;
             _isGroupElement = isGroupElement;
             _isExpanded = isExpanded;
             _hasChildren = hasChildren;
@@ -185,7 +189,11 @@ namespace DevKit.UITK
             _dropTargetElement = container;
             var linedElement = _getLinedElement(targetItem);
             if (linedElement != null)
-                ShowElementIndicator(linedElement, targetItem, mousePosition);
+            {
+                var dropZoneElement = _getDropZoneElement(targetItem);
+                if (dropZoneElement != null)
+                    ShowElementIndicator(linedElement, dropZoneElement, targetItem, mousePosition);
+            }
 
             if (ShouldStartGroupExpand(targetItem))
                 OnGroupHoverStart?.Invoke(targetItem);
@@ -239,36 +247,47 @@ namespace DevKit.UITK
                     else if (relativeY > elementHeight - bottomZoneHeight)
                         return DropZone.Bottom;
                     else
-                        return DropZone.Center;
+                        return DropZone.CenterInside;
                 }
                 else
                 {
                     if (relativeY < topZoneHeight)
                         return DropZone.Top;
                     else
-                        return DropZone.Center; // Нижняя часть развернутой группы = поместить внутрь
+                        return DropZone.CenterBottom; // Нижняя часть развернутой группы = поместить внутрь
                 }
             }
         }
 
-        private void ShowElementIndicator(VisualElement targetElement, T targetItem, Vector2 mousePosition)
+        private void ShowElementIndicator(VisualElement targetElement, VisualElement dropZoneElement,
+            T targetItem, Vector2 mousePosition)
         {
-            var worldBound = targetElement.worldBound;
-            var dropZone = GetDropZone(targetElement, mousePosition, targetItem);
-            var lineX = worldBound.x + 2f;
-            var lineWidth = worldBound.xMax - 2f;
+            var dropWorldBound = dropZoneElement.worldBound;
+
+            var lineX = dropWorldBound.x + 2f;
+            var lineWidth = dropWorldBound.xMax - 2f;
+
+            var targetWorldPosition = targetElement.worldTransform.GetPosition();
+            var lineTopY = targetWorldPosition.y - dropWorldBound.height;
+            var lineBottomY = dropWorldBound.y + targetElement.worldBound.height - dropWorldBound.height;
+
+            var dropZone = GetDropZone(dropZoneElement, mousePosition, targetItem);
 
             switch (dropZone)
             {
                 case DropZone.Top:
                     _currentDropPosition = DropPosition.Before;
-                    ShowLineIndicator(lineX, worldBound.y - worldBound.height, lineWidth);
+                    ShowLineIndicator(lineX, lineTopY, lineWidth);
                     break;
                 case DropZone.Bottom:
                     _currentDropPosition = DropPosition.After;
-                    ShowLineIndicator(lineX, worldBound.yMax - worldBound.height, lineWidth);
+                    ShowLineIndicator(lineX, lineBottomY, lineWidth);
                     break;
-                case DropZone.Center:
+                case DropZone.CenterBottom:
+                    _currentDropPosition = DropPosition.Inside;
+                    ShowLineIndicator(lineX, lineBottomY, lineWidth);
+                    break;
+                case DropZone.CenterInside:
                     _currentDropPosition = DropPosition.Inside;
                     ClearDropIndicators();
                     break;
@@ -277,7 +296,9 @@ namespace DevKit.UITK
 
         private void ShowLineIndicator(float x, float y, float xMax)
         {
-            _dropIndicator.style.translate = new Translate(x, y);
+            _dropIndicator.style.left = x;
+            _dropIndicator.style.top = y;
+
             _dropIndicator.style.width = xMax - x;
             _dropIndicator.style.display = DisplayStyle.Flex;
         }
