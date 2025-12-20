@@ -17,6 +17,14 @@ namespace DevKit.Saves
             _storage.Write(key, serializedData);
         }
 
+        public T Load<T>(string key)
+        {
+            var serializedData = _storage.Read(key);
+            var data = _serializer.Deserialize<T>(serializedData);
+            
+            return data;
+        }
+        
         public string LoadRaw(string key)
         {
             var serializedData = _storage.Read(key);
