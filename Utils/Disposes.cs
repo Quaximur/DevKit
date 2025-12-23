@@ -17,20 +17,14 @@ public static class Disposes
 
     public static void ClearDispose<T>(ref T disposable) where T : IDisposable
     {
-        if (disposable != null)
-        {
-            disposable.Dispose();
-            disposable = default;
-        }
+        disposable?.Dispose();
+        disposable = default;
     }
 
     public static void ResetDispose<T>(ref T disposable) where T : IDisposable, new()
     {
-        if (disposable != null)
-        {
-            disposable.Dispose();
-            disposable = new();
-        }
+        disposable?.Dispose();
+        disposable = new();
     }
 
     public static IDisposable Subscribe<T>(Action<T> source, Action<T> handler)
