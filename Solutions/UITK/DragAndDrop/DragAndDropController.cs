@@ -11,6 +11,7 @@ namespace DevKit.UITK
         public event Action<DropData<T>> OnItemDropped;
         public event Action<T> OnItemDragStart;
         public event Action<T> OnGroupHoverStart;
+        public T DraggingItem => _draggedItem;
 
         private readonly VisualElement _root;
         private readonly VisualElement _dropContainer;
