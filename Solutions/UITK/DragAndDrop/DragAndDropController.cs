@@ -326,19 +326,14 @@ namespace DevKit.UITK
                 return;
             }
 
-            if (_dropTargetElement != null)
+            OnItemDropped?.Invoke(new DropData<T>
             {
-                if (_dropTargetElement.userData == null || _dropTargetElement.userData is not T targetItem)
-                    targetItem = default;
+                Dragged = _draggedItem,
+                Target = GetTargetItem(),
+                PointerPosition = pointerPos,
+                DropPosition = _currentDropPosition
+            });
 
-                OnItemDropped?.Invoke(new DropData<T>
-                {
-                    Dragged = _draggedItem,
-                    Target = targetItem,
-                    PointerPosition = pointerPos,
-                    DropPosition = _currentDropPosition
-                });
-            }
 
             _draggingElement?.RemoveFromClassList("drag-source");
             _draggingElement = null;
@@ -348,6 +343,19 @@ namespace DevKit.UITK
 
             _dragGhost.style.display = DisplayStyle.None;
             ClearDropIndicators();
+            
+            return;
+            
+            T GetTargetItem()
+            {
+                if (_dropTargetElement != null)
+                {
+                    if (_dropTargetElement.userData == null || _dropTargetElement.userData is not T targetItem)
+                        return default;
+                    return targetItem;
+                }
+                return default;
+            }
         }
 
         public bool IsItemsEqual(T item1, T item2)
