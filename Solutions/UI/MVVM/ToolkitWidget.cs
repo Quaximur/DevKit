@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM
 {
-    public abstract partial class ToolkitWidget :VisualElement, IView, IDisposable
+    public abstract partial class ToolkitWidget : VisualElement, IView, IDisposable
     {
         protected VisualElement Root => this;
 
