@@ -13,6 +13,11 @@ namespace DevKit.Utils
         {
             _lockedItems = this;
         }
+        
+        public InspectorReadonlyList(int capacity) : base(capacity)
+        {
+            _lockedItems = this;
+        }
 
         public InspectorReadonlyList(IEnumerable<T> values) : base(values)
         {
