@@ -3,7 +3,7 @@ using System;
 namespace DevKit.Utils
 {
     /// <summary>
-    /// После применения изменений текущее значение заносится в кэш, 
+    /// После применения изменений текущее значение заносится в кеш, 
     /// из-за чего свойство показывается ка неизменённое. 
     /// </summary>
     public class ReactiveChange<T> : ReactiveChangeBase<T>

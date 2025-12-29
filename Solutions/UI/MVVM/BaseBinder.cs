@@ -9,7 +9,7 @@ namespace DevKit.UI.MVVM
     /// <typeparam name="TView">Представление (UI)</typeparam>
     /// <typeparam name="TViewModel">Конкретная модель представления, которя наследуется от (реализует) AViewModel</typeparam>
     /// <typeparam name="AViewModel">Абстрактная модель представления, от которой зависит View</typeparam>
-    public abstract class BaseBinder<TView, TViewModel, AViewModel> : ILinkEntry, IViewBinder<TView>
+    public abstract class BaseBinder<TView, TViewModel, AViewModel> : ILinkEntry, IViewBinder<AViewModel>
         where TView : IView<AViewModel>
         where AViewModel : IViewModel
         where TViewModel : AViewModel, IDisposable
@@ -22,7 +22,12 @@ namespace DevKit.UI.MVVM
             _view = view;
         }
 
-        public abstract void Open();
+        public abstract AViewModel Open();
+
+        void ILinkEntry.Open()
+        {
+            Open();
+        }
 
         public abstract void Close();
     }

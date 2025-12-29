@@ -5,17 +5,21 @@ namespace DevKit.Utils
 {
     public abstract class ReactiveChangeBase<T> : ReactiveProperty<T>, IReactiveChange
     {
-        public bool IsChanged
+        public override T Value
         {
-            get
+            get => base.Value; 
+            set
             {
-                if (EqualityComparer != null)
-                    return !EqualityComparer.Equals(CachedValue, Value);
-                return true;
+                base.Value = value;
+                UpdateIsChanged();
             }
         }
+
+        public ReadOnlyReactiveProperty<bool> IsChanged => _isChanged;
         public T CachedValue { get; protected set; }
+
         protected readonly Func<T> _getValue;
+        protected ReactiveProperty<bool> _isChanged = new(false);
 
         public ReactiveChangeBase(Func<T> getValue, T initialValue = default) :
             base(initialValue)
@@ -29,7 +33,18 @@ namespace DevKit.Utils
         public void UpdateCache()
         {
             CachedValue = _getValue();
-            OnNext(Value);
+            UpdateIsChanged(); // should be false
+        }
+
+        private void UpdateIsChanged()
+        {
+            if (EqualityComparer != null)
+            {
+                _isChanged.Value = !EqualityComparer.Equals(CachedValue, Value);
+                return;
+            }
+            FLogger.Log<ReactiveChangeBase<T>>($"EqualityComparer is null");
+            _isChanged.Value = true;
         }
     }
 }

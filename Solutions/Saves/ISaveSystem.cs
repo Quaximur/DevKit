@@ -4,6 +4,12 @@ namespace DevKit.Saves
     {
         public void Save<T>(string key, T data);
         public string LoadRaw(string key);
+
+        public T Load<T>(string key)
+        {
+            return default;
+        }
+
         public void Delete(string key);
         public bool Exists(string key);
     }
