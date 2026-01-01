@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class AttachableToolkitPopUp<T> : AttachableToolkitScreen<T>  where T : IScreenViewModel
+    public abstract class AttachableToolkitWindow<T> : AttachableToolkitScreen<T>  where T : IScreenViewModel
     {
         [SerializeField] protected string _closeButtonName = "CloseButton";
         [SerializeField] protected string _closeBackgroundName = "CloseBackground";
