@@ -41,6 +41,7 @@ namespace DevKit.UI.MVVM.Bases
             {
                 _currentViewModel?.Dispose();
                 _currentViewModel = default; // null
+                DisposeInstances();
             });
 
             _rootUIBinder.AddView(viewInstance);
@@ -52,6 +53,10 @@ namespace DevKit.UI.MVVM.Bases
         public override void Close()
         {
             _currentViewModel?.StartClosing();
+        }
+
+        protected virtual void DisposeInstances()
+        {
         }
     }
 }
