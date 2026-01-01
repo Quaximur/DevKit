@@ -2,14 +2,18 @@ using R3;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class ScreenToolkitAttach<T> : ToolkitAttach<T>, IScreenAttach<T> where T : ScreenViewModel
+    public abstract class AttachableToolkitScreen<T> : AttachableToolkitView<T>, IScreenAttach<T> where T : IScreenViewModel
     {
         protected CompositeDisposable _disposables;
 
         protected override void OnBind(T viewModel)
         {
             _disposables = new();
-            ViewModel.OnOpenStateChanged.Skip(1).Subscribe(OnOpenStateChanged).AddTo(_disposables);
+            
+            ViewModel.OnOpenStateChanged
+                .Skip(1)
+                .Subscribe(OnOpenStateChanged)
+                .AddTo(_disposables);
         }
 
         protected virtual void OnOpenStateChanged(bool isOpened)

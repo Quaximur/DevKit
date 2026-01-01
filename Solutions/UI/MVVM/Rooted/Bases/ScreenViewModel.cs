@@ -2,7 +2,7 @@ using R3;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class ScreenViewModel : BaseViewModel
+    public abstract class ScreenViewModel : BaseViewModel, IScreenViewModel
     {
         public Observable<bool> OnOpenStateChanged => _isOpened;
         public Observable<Unit> OnClosingCompleted => _closingCompletedSignal;

@@ -4,7 +4,7 @@ namespace DevKit.UI.MVVM.Bases
 {
     public class SimpleAttachBinder<TView, TViewModel> : AttachBinder<TView, TViewModel>
         where TView : BaseView, IScreenAttach<TViewModel> 
-        where TViewModel : ScreenViewModel
+        where TViewModel : IScreenViewModel
     {
         private readonly Func<TViewModel> _viewModelFactory;
 
