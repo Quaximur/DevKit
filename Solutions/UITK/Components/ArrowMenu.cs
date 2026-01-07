@@ -1,4 +1,5 @@
 using System;
+using DevKit.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -15,6 +16,7 @@ namespace DevKit.UITK
         public const string rightArrowButtonUssClassName = "arrows-menu__arrow-button--right";
 
         protected T[] _options = Array.Empty<T>();
+        protected T[] _overrideOptions;
         protected int _currentIndex = 0;
         protected string _leftButtonText = "<";
         protected string _rightButtonText = ">";
@@ -31,6 +33,17 @@ namespace DevKit.UITK
             set
             {
                 _options = value ?? Array.Empty<T>();
+                UpdateOptions();
+            }
+        }
+
+        [UxmlAttribute("options")]
+        public T[] OverrideDisplayOptions
+        {
+            get => _overrideOptions;
+            set
+            {
+                _overrideOptions = value;
                 UpdateOptions();
             }
         }
@@ -163,8 +176,17 @@ namespace DevKit.UITK
             if (_valueLabel == null)
                 return;
 
-            if (Options is { Length: > 0 } && CurrentIndex >= 0 && CurrentIndex < Options.Length)
+            if (_overrideOptions != null)
+            {
+                if (_options != null && _overrideOptions.Length != _options.Length)
+                    FLogger.LogWarning<ArrowMenu<T>>("Override options have different length");
+                else if (CurrentIndex >= 0 && CurrentIndex < _overrideOptions.Length)
+                    _valueLabel.text = _overrideOptions[CurrentIndex].ToString();
+            }
+            else if (Options is { Length: > 0 } && CurrentIndex >= 0 && CurrentIndex < Options.Length)
+            {
                 _valueLabel.text = Options[CurrentIndex].ToString();
+            }
             else
                 _valueLabel.text = string.Empty;
         }
