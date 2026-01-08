@@ -7,7 +7,7 @@ namespace DevKit.Utils
     {
         public override T Value
         {
-            get => base.Value; 
+            get => base.Value;
             set
             {
                 base.Value = value;
@@ -19,7 +19,7 @@ namespace DevKit.Utils
         public T CachedValue { get; protected set; }
 
         protected readonly Func<T> _getValue;
-        protected ReactiveProperty<bool> _isChanged = new(false);
+        protected readonly ReactiveProperty<bool> _isChanged = new(false);
 
         public ReactiveChangeBase(Func<T> getValue, T initialValue = default) :
             base(initialValue)
@@ -30,6 +30,7 @@ namespace DevKit.Utils
 
         public abstract void ApplyChanges();
         public void ResetToCached() => Value = CachedValue;
+
         public void UpdateCache()
         {
             CachedValue = _getValue();
