@@ -52,12 +52,12 @@ namespace DevKit.Solutions
 
         private void LogAdded(string commandName)
         {
-            UnityEngine.Debug.Log($"Handler registered for command {commandName}");
+            UnityEngine.Debug.Log($"Handler has been registered for command {commandName}");
         }
         
         private void LogExists(string commandName)
         {
-            UnityEngine.Debug.LogWarning($"Handler already registered for command {commandName}");
+            UnityEngine.Debug.LogWarning($"Handler is already registered for command {commandName}");
         }
         
     }

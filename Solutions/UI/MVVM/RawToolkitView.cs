@@ -5,17 +5,17 @@ namespace DevKit.UI.MVVM
     /// <summary>
     /// Чистая реализация IToolkitView без наследования от MonoBehaviour.
     /// </summary>
-    public class RawVoidToolkitView : IToolkitView
+    public class RawToolkitView : IToolkitView
     {
         private readonly VisualTreeAsset _uiAsset;
         private VisualElement _root;
 
-        public RawVoidToolkitView(VisualTreeAsset asset)
+        public RawToolkitView(VisualTreeAsset asset)
         {
             _uiAsset = asset;
         }
 
-        public VisualElement InitAndGetRoot()
+        public virtual VisualElement InitAndGetRoot()
         {
             _root = UxmlUtil.CloneStyled(_uiAsset);
             return _root;

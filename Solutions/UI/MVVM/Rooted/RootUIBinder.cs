@@ -80,7 +80,7 @@ namespace DevKit.UI.MVVM
         /// This is only used by UI Toolkit Views in terms of implementation Visitor pattern. 
         /// For the scene UI binding use SetViews or AddViews method instead.
         /// </summary>
-        public void Attach(VisualElement visualElement)
+        void IRootUI.Attach(VisualElement visualElement)
         {
             _visualElementRoot.Add(visualElement);
         }
@@ -90,7 +90,7 @@ namespace DevKit.UI.MVVM
         /// Can also be used with UI Toolkit View gameobjects just to hold them.
         /// For the scene UI binding use SetViews or AddViews method instead.
         /// </summary>
-        public void Attach(GameObject gameObjectUI, int sortOrder)
+        void IRootUI.Attach(GameObject gameObjectUI, int sortOrder)
         {
             switch (sortOrder)
             {
@@ -103,12 +103,12 @@ namespace DevKit.UI.MVVM
             }
         }
 
-        public void Detach(VisualElement visualElement)
+        void IRootUI.Detach(VisualElement visualElement)
         {
             visualElement.RemoveFromHierarchy();
         }
 
-        public void Detach(GameObject gameObjectUI)
+        void IRootUI.Detach(GameObject gameObjectUI)
         {
             Destroy(gameObjectUI);
             DisableFirstCanvasIfNeeded();

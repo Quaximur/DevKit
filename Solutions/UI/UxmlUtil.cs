@@ -6,8 +6,8 @@ namespace DevKit.UI
     {
         public static VisualElement CloneStyled(VisualTreeAsset asset)
         {
-            var root = asset.CloneTree(); // Создаём UI из uxml, получая при  этом корневой VisualElement для данного View.
-            root.pickingMode = PickingMode.Ignore; // По умолчанию корневой элемент не ловит события pointer (можно кликать насквозь).
+            var root = asset.CloneTree();
+            root.pickingMode = PickingMode.Ignore; 
             root.style.flexGrow = 1;
 
             return root;

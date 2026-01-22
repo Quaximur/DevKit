@@ -2,7 +2,7 @@ using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM
 {
-    public abstract class ToolkitAttach : ToolkitView, IAttachableToolkitView
+    public abstract class AttachableToolkitView : ToolkitView, IAttachableToolkitView
     {
         VisualElement IAttachableToolkitView.Root => Root;
 
@@ -12,7 +12,7 @@ namespace DevKit.UI.MVVM
         }
     }
     
-    public abstract class ToolkitAttach<T> : ToolkitView<T>, IAttachableToolkitView where T : IViewModel
+    public abstract class AttachableToolkitView<T> : ToolkitView<T>, IAttachableToolkitView where T : IViewModel
     {
         VisualElement IAttachableToolkitView.Root => Root;
         
