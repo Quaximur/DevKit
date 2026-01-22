@@ -27,10 +27,17 @@ namespace DevKit.UI.MVVM.Bases
         protected override void OnBind(T viewModel)
         {
             base.OnBind(viewModel);
+            BindClosingControls();
+        }
 
-            _closeButton?.SubscribeCallback<ClickEvent>(OnCloseClicked)
+        /// <summary>
+        /// Initializes event subscriptions for close controls (<see cref="_closeButton"/>, <see cref="_closeBackground"/>)
+        /// </summary>
+        protected virtual void BindClosingControls()
+        {
+             _closeButton?.SubscribeCallbackOnce<ClickEvent>(OnCloseClicked)
                 .AddTo(_disposables);
-            _closeBackground?.SubscribeCallback<ClickEvent>(OnCloseClicked)
+            _closeBackground?.SubscribeCallbackOnce<ClickEvent>(OnCloseClicked)
                 .AddTo(_disposables);
         }
 
