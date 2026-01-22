@@ -28,9 +28,9 @@ namespace DevKit.UI.MVVM.Bases
         {
             base.OnBind(viewModel);
 
-            _closeButton?.SubscribeCallbackOnce<ClickEvent>(OnCloseClicked)
+            _closeButton?.SubscribeCallback<ClickEvent>(OnCloseClicked)
                 .AddTo(_disposables);
-            _closeBackground?.SubscribeCallbackOnce<ClickEvent>(OnCloseClicked)
+            _closeBackground?.SubscribeCallback<ClickEvent>(OnCloseClicked)
                 .AddTo(_disposables);
         }
 
