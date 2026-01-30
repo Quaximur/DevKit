@@ -15,7 +15,11 @@ namespace DevKit.Locator
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ForceReload()
         {
-            Current = new();
+            if (UnityEditor.EditorSettings.enterPlayModeOptionsEnabled &&
+                    UnityEditor.EditorSettings.enterPlayModeOptions.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+            {
+                Current = new();
+            }
         }
 #endif
 

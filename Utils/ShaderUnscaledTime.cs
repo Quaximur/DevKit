@@ -14,7 +14,11 @@ namespace DevKit.Utils
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ForceReload()
         {
-            Off();
+            if (UnityEditor.EditorSettings.enterPlayModeOptionsEnabled &&
+                    UnityEditor.EditorSettings.enterPlayModeOptions.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+            {
+                Off();
+            }
         }
 #endif
 
