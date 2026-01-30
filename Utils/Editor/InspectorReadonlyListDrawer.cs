@@ -12,7 +12,6 @@ namespace DevKit.Utils.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var root = new VisualElement();
-
             var listProperty = property.FindPropertyRelative("_lockedItems");
             if (listProperty == null || !listProperty.isArray)
             {
@@ -45,9 +44,17 @@ namespace DevKit.Utils.Editor
                     }
                 }
             };
+
             listView.Q<TextField>(name: BaseListView.arraySizeFieldUssClassName)?.SetEnabled(false);
 
+            root.TrackPropertyValue(listProperty, _ =>
+            {
+                listView.itemsSource = GetItemsSource(listProperty);
+                listView.Rebuild();
+            });
+
             root.Add(listView);
+            
             return root;
         }
 

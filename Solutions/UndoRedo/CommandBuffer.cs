@@ -5,17 +5,17 @@ namespace DevKit.UndoRedo
 {
     public class CommandBuffer
     {
-        public IReadOnlyList<IBufferCommand> UndoLongCommandsBuffer => _undoLongCommandsBuffer;
-        public IReadOnlyList<IBufferCommand> RedoLongCommandsBuffer => _redoCommandsBuffer;
+        public IReadOnlyList<IBufferCommand> UndoCommandsBuffer => _undoCommandsBuffer;
+        public IReadOnlyList<IBufferCommand> RedoCommandsBuffer => _redoCommandsBuffer;
 
         private readonly int _capacity;
-        private readonly LimitedRingBuffer<IBufferCommand> _undoLongCommandsBuffer;
+        private readonly LimitedRingBuffer<IBufferCommand> _undoCommandsBuffer;
         private readonly LimitedRingBuffer<IBufferCommand> _redoCommandsBuffer;
 
         public CommandBuffer(int capacity = 100)
         {
             _capacity = capacity;
-            _undoLongCommandsBuffer = new(_capacity);
+            _undoCommandsBuffer = new(_capacity);
             _redoCommandsBuffer = new(_capacity);
         }
 
@@ -35,12 +35,12 @@ namespace DevKit.UndoRedo
 
         public void UndoLastCommand(Action callback = null)
         {
-            if (_undoLongCommandsBuffer.Count == 0)
+            if (_undoCommandsBuffer.Count == 0)
                 return;
 
-            var longCommandToUndo = _undoLongCommandsBuffer.RemoveLast();
-            PushCommandToRedoBuffer(longCommandToUndo);
-            longCommandToUndo?.Rollback();
+            var commandToUndo = _undoCommandsBuffer.RemoveLast();
+            PushCommandToRedoBuffer(commandToUndo);
+            commandToUndo?.Rollback();
             callback?.Invoke();
         }
 
@@ -49,32 +49,32 @@ namespace DevKit.UndoRedo
             if (_redoCommandsBuffer.Count == 0)
                 return;
 
-            var longCommandToRedo = _redoCommandsBuffer.RemoveLast();
-            PushCommandToUndoBuffer(longCommandToRedo);
-            longCommandToRedo?.Execute();
+            var commandToRedo = _redoCommandsBuffer.RemoveLast();
+            PushCommandToUndoBuffer(commandToRedo);
+            commandToRedo?.Execute();
             callback?.Invoke();
         }
 
         public void Clear()
         {
-            _undoLongCommandsBuffer.Clear();
+            _undoCommandsBuffer.Clear();
             _redoCommandsBuffer.Clear();
         }
 
         private void PushCommandToUndoBuffer(IBufferCommand command)
         {
-            if (_undoLongCommandsBuffer.Count >= _capacity)
-                _undoLongCommandsBuffer.RemoveFirst();
+            if (_undoCommandsBuffer.Count >= _capacity)
+                _undoCommandsBuffer.RemoveFirst();
 
-            _undoLongCommandsBuffer.AddLast(command);
+            _undoCommandsBuffer.AddLast(command);
         }
 
-        private void PushCommandToRedoBuffer(IBufferCommand longCommand)
+        private void PushCommandToRedoBuffer(IBufferCommand command)
         {
             if (_redoCommandsBuffer.Count >= _capacity)
                 _redoCommandsBuffer.RemoveFirst();
 
-            _redoCommandsBuffer.AddLast(longCommand);
+            _redoCommandsBuffer.AddLast(command);
         }
     }
 }
