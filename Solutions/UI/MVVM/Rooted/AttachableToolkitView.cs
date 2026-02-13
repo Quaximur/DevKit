@@ -5,6 +5,8 @@ namespace DevKit.UI.MVVM
 {
     public abstract class AttachableToolkitView : ToolkitView, IAttachableToolkitView
     {
+        public virtual int Priority { get; }
+
         VisualElement IAttachableToolkitView.Root => Root;
         GameObject IAttachableToolkitView.GameObject => gameObject;
 
@@ -16,6 +18,8 @@ namespace DevKit.UI.MVVM
     
     public abstract class AttachableToolkitView<T> : ToolkitView<T>, IAttachableToolkitView where T : IViewModel
     {
+        public virtual int Priority { get; }
+        
         VisualElement IAttachableToolkitView.Root => Root;
         GameObject IAttachableToolkitView.GameObject => gameObject;
 

@@ -4,15 +4,15 @@ namespace DevKit.UI.MVVM
 {
     public abstract class AttachableCanvasView : CanvasView, IAttachableCanvasView
     {
+        public virtual int Priority { get; }
+
         GameObject IAttachableCanvasView.GameObject => gameObject;
-        
-        public abstract int Priority { get; }
     }
     
     public abstract class AttachableCanvasView<T> : CanvasView<T>, IAttachableCanvasView  where T : IViewModel
     {
-        GameObject IAttachableCanvasView.GameObject => gameObject;
+        public virtual int Priority { get; }
 
-        public abstract int Priority { get; }
+        GameObject IAttachableCanvasView.GameObject => gameObject;
     }
 }
