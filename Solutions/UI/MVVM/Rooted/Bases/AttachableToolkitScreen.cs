@@ -7,18 +7,17 @@ namespace DevKit.UI.MVVM.Bases
     {
         public override int Priority => _priority;
 
-        /// <summary>
-        /// Views with higher priority are placed on top of views with lower priority,
-        /// making them visually closer to the user.
-        /// </summary>
-        [SerializeField] protected int _priority;
-        
+        [SerializeField]
+        [Tooltip("Views with higher priority are placed on top of views with lower priority, " +
+                 "making them visually closer to the user.")]
+        protected int _priority;
+
         protected CompositeDisposable _disposables;
 
         protected override void OnBind(T viewModel)
         {
             _disposables = new();
-            
+
             ViewModel.OnOpenStateChanged
                 .Skip(1)
                 .Subscribe(OnOpenStateChanged)
