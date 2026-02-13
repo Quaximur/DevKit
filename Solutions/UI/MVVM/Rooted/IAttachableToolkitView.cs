@@ -11,7 +11,7 @@ namespace DevKit.UI.MVVM
         void IAttachableView.Attach(IRootUI rootUI)
         {
             rootUI.Attach(GameObject);
-            rootUI.Attach(Root);
+            rootUI.Attach(Root, Priority);
         }
 
         void IAttachableView.Detach(IRootUI rootUI)

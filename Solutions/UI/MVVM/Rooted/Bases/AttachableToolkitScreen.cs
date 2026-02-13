@@ -1,9 +1,18 @@
 using R3;
+using UnityEngine;
 
 namespace DevKit.UI.MVVM.Bases
 {
     public abstract class AttachableToolkitScreen<T> : AttachableToolkitView<T>, IScreenAttach<T> where T : IScreenViewModel
     {
+        public override int Priority => _priority;
+
+        /// <summary>
+        /// Views with higher priority are placed on top of views with lower priority,
+        /// making them visually closer to the user.
+        /// </summary>
+        [SerializeField] protected int _priority;
+        
         protected CompositeDisposable _disposables;
 
         protected override void OnBind(T viewModel)
