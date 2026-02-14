@@ -10,6 +10,18 @@ namespace DevKit.Utils
         private readonly static int UnscaledTimePropertyId = Shader.PropertyToID(UnscaledTimePropertyName);
         private static IDisposable _disposable;
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ForceReload()
+        {
+            if (UnityEditor.EditorSettings.enterPlayModeOptionsEnabled &&
+                    UnityEditor.EditorSettings.enterPlayModeOptions.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+            {
+                Off();
+            }
+        }
+#endif
+
         public static void On()
         {
             _disposable = Observable.EveryUpdate().Subscribe(SetShaderProperty);

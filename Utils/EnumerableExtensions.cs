@@ -5,9 +5,11 @@ namespace DevKit.Utils
 {
     public static class EnumerableExtensions
     {
-        public static InspectorReadonlyList<T> ToInspectorReadonlyList<T>(this IEnumerable<T> values) =>
-            new InspectorReadonlyList<T>(values);
-
+        public static InspectorReadonlyList<T> ToInspectorReadonlyList<T>(this IEnumerable<T> values)
+        {
+            return new InspectorReadonlyList<T>(values);
+        }
+            
         public static int IndexWhere<T>(this IEnumerable<T> values, Func<T, bool> predicate)
         {
             var i = 0;
@@ -17,6 +19,7 @@ namespace DevKit.Utils
                     return i;
                 i++;
             }
+
             return -1;
         }
 
@@ -29,6 +32,7 @@ namespace DevKit.Utils
                     if (predicate(list[i]))
                         return i;
                 }
+
                 return -1;
             }
             else
@@ -42,6 +46,7 @@ namespace DevKit.Utils
                         lastIndex = currentIndex;
                     currentIndex++;
                 }
+                
                 return lastIndex;
             }
         }

@@ -5,20 +5,20 @@ namespace DevKit.UI.MVVM
 {
     public interface IAttachableToolkitView : IToolkitView, IAttachableView
     {
-        public GameObject gameObject { get; }
         protected VisualElement Root { get; }
+        protected GameObject GameObject { get; }
         
         void IAttachableView.Attach(IRootUI rootUI)
         {
-            rootUI.Attach(gameObject);
-            rootUI.Attach(Root);
+            rootUI.Attach(GameObject);
+            rootUI.Attach(Root, Priority);
         }
 
         void IAttachableView.Detach(IRootUI rootUI)
         {
             Dispose();
             rootUI.Detach(Root);
-            rootUI.Detach(gameObject);
+            rootUI.Detach(GameObject);
         }
     }
 }

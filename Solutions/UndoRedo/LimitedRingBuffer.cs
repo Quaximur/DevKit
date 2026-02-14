@@ -8,12 +8,13 @@ namespace DevKit.UndoRedo
         IReadOnlyList<T>, IReadOnlyCollection<T>
     {
         private readonly T[] _items;
-        private int _endIndex;
-        private int _startIndex;
+        private int _head;
+        private int _tail;
         private int _count;
+        private readonly int _capacity;
 
         public int Count => _count;
-        public int Capacity => _items.Length;
+        public int Capacity => _capacity;
         public bool IsEmpty => _count == 0;
         public bool IsFull => _count == Capacity;
         public bool IsReadOnly => false;
@@ -23,9 +24,10 @@ namespace DevKit.UndoRedo
             if (capacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be greater than 0");
 
+            _capacity = capacity;
             _items = new T[capacity];
-            _endIndex = 0;
-            _startIndex = -1;
+            _head = 0;
+            _tail = 0;
             _count = 0;
         }
 
@@ -33,12 +35,12 @@ namespace DevKit.UndoRedo
         {
             if (IsFull)
             {
-                _endIndex = (_endIndex + 1) % Capacity;
+                _tail = (_tail - 1 + Capacity) % Capacity;
                 _count--;
             }
 
-            _startIndex = (_startIndex + 1) % Capacity;
-            _items[_startIndex] = item;
+            _head = (_head - 1 + Capacity) % Capacity;
+            _items[_head] = item;
             _count++;
         }
 
@@ -46,12 +48,12 @@ namespace DevKit.UndoRedo
         {
             if (IsFull)
             {
-                _startIndex = (_startIndex - 1 + Capacity) % Capacity;
+                _head = (_head + 1) % Capacity;
                 _count--;
             }
 
-            _endIndex = (_endIndex - 1 + Capacity) % Capacity;
-            _items[_endIndex] = item;
+            _items[_tail] = item;
+            _tail = (_tail + 1) % Capacity;
             _count++;
         }
 
@@ -60,10 +62,10 @@ namespace DevKit.UndoRedo
             if (IsEmpty)
                 throw new InvalidOperationException("Buffer is empty");
 
-            var item = _items[_startIndex];
-            _items[_startIndex] = default;
+            var item = _items[_head];
+            _items[_head] = default;
 
-            _startIndex = (_startIndex - 1 + Capacity) % Capacity;
+            _head = (_head + 1) % Capacity;
             _count--;
 
             return item;
@@ -74,10 +76,10 @@ namespace DevKit.UndoRedo
             if (IsEmpty)
                 throw new InvalidOperationException("Buffer is empty");
 
-            var item = _items[_endIndex];
-            _items[_endIndex] = default;
+            _tail = (_tail - 1 + Capacity) % Capacity;
+            var item = _items[_tail];
+            _items[_tail] = default;
 
-            _endIndex = (_endIndex + 1) % Capacity;
             _count--;
 
             return item;
@@ -88,7 +90,7 @@ namespace DevKit.UndoRedo
             if (IsEmpty)
                 throw new InvalidOperationException("Buffer is empty");
 
-            return _items[_startIndex];
+            return _items[_head];
         }
 
         public T GetLast()
@@ -96,75 +98,15 @@ namespace DevKit.UndoRedo
             if (IsEmpty)
                 throw new InvalidOperationException("Buffer is empty");
 
-            return _items[_endIndex];
+            return _items[(_tail - 1 + Capacity) % Capacity];
         }
 
         public void Clear()
         {
             Array.Clear(_items, 0, _items.Length);
-            _endIndex = 0;
-            _startIndex = -1;
+            _head = 0;
+            _tail = 0;
             _count = 0;
-        }
-
-        public bool TryAddFirst(T item)
-        {
-            AddFirst(item);
-            return true;
-        }
-
-        public bool TryAddLast(T item)
-        {
-            AddLast(item);
-            return true;
-        }
-
-        public bool TryRemoveFirst(out T result)
-        {
-            if (IsEmpty)
-            {
-                result = default;
-                return false;
-            }
-
-            result = RemoveFirst();
-            return true;
-        }
-
-        public bool TryRemoveLast(out T result)
-        {
-            if (IsEmpty)
-            {
-                result = default;
-                return false;
-            }
-
-            result = RemoveLast();
-            return true;
-        }
-
-        public bool TryGetFirst(out T result)
-        {
-            if (IsEmpty)
-            {
-                result = default;
-                return false;
-            }
-
-            result = GetFirst();
-            return true;
-        }
-
-        public bool TryGetLast(out T result)
-        {
-            if (IsEmpty)
-            {
-                result = default;
-                return false;
-            }
-
-            result = GetLast();
-            return true;
         }
 
         public T[] ToArray()
@@ -174,15 +116,15 @@ namespace DevKit.UndoRedo
             if (_count == 0)
                 return result;
 
-            if (_endIndex <= _startIndex)
+            if (_head < _tail)
             {
-                Array.Copy(_items, _endIndex, result, 0, _count);
+                Array.Copy(_items, _head, result, 0, _count);
             }
             else
             {
-                int firstPart = Capacity - _endIndex;
-                Array.Copy(_items, _endIndex, result, 0, firstPart);
-                Array.Copy(_items, 0, result, firstPart, _startIndex + 1);
+                int firstPart = Capacity - _head;
+                Array.Copy(_items, _head, result, 0, firstPart);
+                Array.Copy(_items, 0, result, firstPart, _tail);
             }
 
             return result;
@@ -197,8 +139,8 @@ namespace DevKit.UndoRedo
 
             for (int i = 0; i < _count; i++)
             {
-                int index = (_startIndex - i + Capacity) % Capacity;
-                result[i] = _items[index];
+                int index = (_head + i) % Capacity;
+                result[_count - 1 - i] = _items[index];
             }
 
             return result;
@@ -211,7 +153,7 @@ namespace DevKit.UndoRedo
                 if (index < 0 || index >= _count)
                     throw new IndexOutOfRangeException();
 
-                int actualIndex = (_endIndex + index) % Capacity;
+                int actualIndex = (_head + index) % Capacity;
                 return _items[actualIndex];
             }
             set
@@ -219,7 +161,7 @@ namespace DevKit.UndoRedo
                 if (index < 0 || index >= _count)
                     throw new IndexOutOfRangeException();
 
-                int actualIndex = (_endIndex + index) % Capacity;
+                int actualIndex = (_head + index) % Capacity;
                 _items[actualIndex] = value;
             }
         }
@@ -228,7 +170,7 @@ namespace DevKit.UndoRedo
         {
             for (int i = 0; i < _count; i++)
             {
-                int index = (_endIndex + i) % Capacity;
+                int index = (_head + i) % Capacity;
                 yield return _items[index];
             }
         }
@@ -243,7 +185,7 @@ namespace DevKit.UndoRedo
             var comparer = EqualityComparer<T>.Default;
             for (int i = 0; i < _count; i++)
             {
-                int index = (_endIndex + i) % Capacity;
+                int index = (_head + i) % Capacity;
                 if (comparer.Equals(_items[index], item))
                     return true;
             }
@@ -264,15 +206,15 @@ namespace DevKit.UndoRedo
             if (_count == 0)
                 return;
 
-            if (_endIndex <= _startIndex)
+            if (_head < _tail)
             {
-                Array.Copy(_items, _endIndex, array, arrayIndex, _count);
+                Array.Copy(_items, _head, array, arrayIndex, _count);
             }
             else
             {
-                int firstPart = Capacity - _endIndex;
-                Array.Copy(_items, _endIndex, array, arrayIndex, firstPart);
-                Array.Copy(_items, 0, array, arrayIndex + firstPart, _startIndex + 1);
+                int firstPart = Capacity - _head;
+                Array.Copy(_items, _head, array, arrayIndex, firstPart);
+                Array.Copy(_items, 0, array, arrayIndex + firstPart, _tail);
             }
         }
 
@@ -281,31 +223,16 @@ namespace DevKit.UndoRedo
             var comparer = EqualityComparer<T>.Default;
             for (int i = 0; i < _count; i++)
             {
-                int index = (_endIndex + i) % Capacity;
+                int index = (_head + i) % Capacity;
                 if (comparer.Equals(_items[index], item))
                     return i;
             }
             return -1;
         }
 
-        void IList<T>.Insert(int index, T item)
-        {
-            throw new NotSupportedException("Insert operation is not supported for ring buffer");
-        }
-
-        void IList<T>.RemoveAt(int index)
-        {
-            throw new NotSupportedException("RemoveAt operation is not supported for ring buffer");
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            AddFirst(item);
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException("Remove operation is not supported for ring buffer");
-        }
+        void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
+        void IList<T>.RemoveAt(int index) => throw new NotSupportedException();
+        void ICollection<T>.Add(T item) => AddLast(item);
+        bool ICollection<T>.Remove(T item) => throw new NotSupportedException();
     }
 }

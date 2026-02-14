@@ -1,14 +1,27 @@
 using System;
 using System.Collections.Generic;
 using DevKit.Utils;
+using UnityEngine;
 
 namespace DevKit.Locator
 {
     public class ServiceLocator
     {
-        public static ServiceLocator Current { get; } = new();
+        public static ServiceLocator Current { get; private set; } = new();
 
         private readonly Dictionary<Type, object> _services = new();
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ForceReload()
+        {
+            if (UnityEditor.EditorSettings.enterPlayModeOptionsEnabled &&
+                    UnityEditor.EditorSettings.enterPlayModeOptions.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload))
+            {
+                Current = new();
+            }
+        }
+#endif
 
         public void Register<TService>(TService service) where TService : class
         {

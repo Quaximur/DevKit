@@ -1,22 +1,64 @@
 using System.Collections.Generic;
 using System.Linq;
+using DevKit.Utils;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM
 {
     public class RootUIBinder : MonoBehaviour, IRootUIBinder, IRootUI
     {
-        [SerializeField] private UIDocument _document;
-        [SerializeField] private Canvas _firstCanvas;
-        [SerializeField] private RectTransform _canvasFirstUiRoot;
-        [SerializeField] private RectTransform _canvasLastUiRoot;
-        [SerializeField] private string _visualElementRootName;
+        [SerializeField] private UIDocument _documentPrefab;
+        [SerializeField] private Canvas _canvasPrefab;
+        [SerializeField] private Transform _layersRoot;
 
-        private VisualElement _visualElementRoot;
         private readonly HashSet<IAttachableView> _bindedViews = new();
+        private ObjectPool<UIDocument> _documentPool;
+        private ObjectPool<Canvas> _canvasPool;
+        private readonly Dictionary<float, Canvas> _canvasLayersMap = new();
+        private readonly Dictionary<float, UIDocument> _documentLayersMap = new();
+        private readonly Dictionary<GameObject, Canvas> _canvasViewParentMap = new();
+        private readonly Dictionary<VisualElement, UIDocument> _documentViewParentMap = new();
 
-#region IRootUIBinder
+        #region MonoBehaviour
+        private void Awake()
+        {
+            _documentPool = new ObjectPool<UIDocument>(
+                createFunc: () =>
+                {
+                    var document = Instantiate(_documentPrefab);
+                    document.transform.SetParent(_layersRoot, false);
+                    return document;
+                },
+                actionOnGet: x => x.gameObject.SetActive(true),
+                actionOnRelease: x => x.gameObject.SetActive(false),
+                actionOnDestroy: x => Destroy(x.gameObject),
+                defaultCapacity: 1,
+                maxSize: 10);
+
+            _canvasPool = new ObjectPool<Canvas>(
+                createFunc: () =>
+                {
+                    var canvas = Instantiate(_canvasPrefab);
+                    canvas.transform.SetParent(_layersRoot, false);
+                    return canvas;
+                },
+                actionOnGet: x => x.gameObject.SetActive(true),
+                actionOnRelease: x => x.gameObject.SetActive(false),
+                actionOnDestroy: x => Destroy(x.gameObject),
+                defaultCapacity: 1,
+                maxSize: 10);
+        }
+
+        private void OnDestroy()
+        {
+            _documentPool?.Clear();
+            _canvasPool?.Clear();
+        }
+        #endregion
+
+        #region IRootUIBinder
         public void SetView(IAttachableView view)
         {
             ClearViews();
@@ -64,25 +106,30 @@ namespace DevKit.UI.MVVM
             foreach (var view in _bindedViews.ToArray())
                 ClearView(view);
         }
-#endregion
+        #endregion
 
-#region MonoBehaviour
-        private void Awake()
-        {
-            _visualElementRoot = _document.rootVisualElement.Q(name: _visualElementRootName) ??
-                                 _document.rootVisualElement;
-            // _firstCanvas.gameObject.SetActive(false);
-        }
-#endregion
-
-#region IRootUI
+        #region IRootUI
         /// <summary>
         /// This is only used by UI Toolkit Views in terms of implementation Visitor pattern. 
         /// For the scene UI binding use SetViews or AddViews method instead.
         /// </summary>
-        void IRootUI.Attach(VisualElement visualElement)
+        void IRootUI.Attach(VisualElement visualElement, int sortOrder)
         {
-            _visualElementRoot.Add(visualElement);
+            if (!_documentLayersMap.TryGetValue(sortOrder, out var document))
+            {
+                document = _documentPool.Get();
+                document.panelSettings.sortingOrder = sortOrder;
+
+                _documentLayersMap.Add(sortOrder, document);
+            }
+
+            if (!_documentViewParentMap.TryAdd(visualElement, document))
+            {
+                FLogger.LogWarning($"Reattaching VisualElement '{visualElement.name}'");
+                _documentViewParentMap[visualElement] = document;
+            }
+
+            document.rootVisualElement.Add(visualElement);
         }
 
         /// <summary>
@@ -92,38 +139,50 @@ namespace DevKit.UI.MVVM
         /// </summary>
         void IRootUI.Attach(GameObject gameObjectUI, int sortOrder)
         {
-            switch (sortOrder)
+            if (!_canvasLayersMap.TryGetValue(sortOrder, out var canvas))
             {
-                case 0:
-                    EnableFirstCanvas();
-                    gameObjectUI.transform.SetParent(_canvasFirstUiRoot, false);
-                    break;
-                case 1:
-                    gameObjectUI.transform.SetParent(_canvasLastUiRoot, false); break;
+                canvas = _canvasPool.Get();
+                canvas.sortingOrder = sortOrder;
+
+                _canvasLayersMap.Add(sortOrder, canvas);
             }
+
+            if (!_canvasViewParentMap.TryAdd(gameObjectUI, canvas))
+            {
+                FLogger.LogWarning($"Reattaching GameObject '{gameObjectUI.name}'");
+                _canvasViewParentMap[gameObjectUI] = canvas;
+            }
+
+            gameObjectUI.transform.SetParent(canvas.transform, false);
         }
 
         void IRootUI.Detach(VisualElement visualElement)
         {
             visualElement.RemoveFromHierarchy();
+
+            if (_documentViewParentMap.TryGetValue(visualElement, out var document) &&
+                document.rootVisualElement.childCount == 0)
+            {
+                _documentLayersMap.Remove(document.panelSettings.sortingOrder);
+                _documentViewParentMap.Remove(visualElement);
+
+                _documentPool.Release(document);
+            }
         }
 
         void IRootUI.Detach(GameObject gameObjectUI)
         {
+            if (_canvasViewParentMap.TryGetValue(gameObjectUI, out var canvas) &&
+                canvas.transform.childCount == 1)
+            {
+                _canvasLayersMap.Remove(canvas.sortingOrder);
+                _canvasViewParentMap.Remove(gameObjectUI);
+
+                _canvasPool.Release(canvas);
+            }
+
             Destroy(gameObjectUI);
-            DisableFirstCanvasIfNeeded();
         }
-#endregion
-
-        private void EnableFirstCanvas()
-        {
-            _firstCanvas.gameObject.SetActive(true);
-        }
-
-        private void DisableFirstCanvasIfNeeded()
-        {
-            if (_canvasFirstUiRoot.childCount == 0)
-                _firstCanvas.gameObject.SetActive(false);
-        }
+        #endregion
     }
 }
