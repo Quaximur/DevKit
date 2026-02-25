@@ -33,13 +33,13 @@ namespace DevKit.Solutions
             LogAdded(type.Name);
         }
 
-        // public void Process<TCommand>(TCommand command) where TCommand : ICommand
-        // {
-        //     if (!_handlers.TryGetValue(typeof(TCommand), out var handler))
-        //         throw new InvalidOperationException($"No handler registered for command {typeof(TCommand).Name}");
+        public void Process<TCommand>(TCommand command) where TCommand : ICommand
+        {
+            if (!_handlers.TryGetValue(typeof(TCommand), out var handler))
+                throw new InvalidOperationException($"No handler registered for command {typeof(TCommand).Name}");
 
-        //     ((ICommandHandler<TCommand>)handler).Handle(command);
-        // }
+            handler.Handle(command);
+        }
 
         public void Process(ICommand command)
         {
