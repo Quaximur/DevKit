@@ -6,17 +6,11 @@ namespace DevKit.UI.MVVM
     /// </summary>
     public abstract class CanvasView : BaseView
     {
-        /// <summary>
-        /// Показать экран.
-        /// </summary>
         public override void Show()
         {
             gameObject.SetActive(true);
         }
 
-        /// <summary>
-        /// Скрыть экран.
-        /// </summary>
         public override void Hide()
         {
             gameObject.SetActive(false);

@@ -6,7 +6,7 @@ namespace DevKit.UI.MVVM.Bases
     public abstract class AttachableCanvasScreen<T> : AttachableCanvasView<T>, IScreenAttach<T>
         where T : IScreenViewModel
     {
-        public override int Priority => _priority;
+        public override int CanvasSortOrder => _priority;
 
         [SerializeField]
         [Tooltip("Views with higher priority are placed on top of views with lower priority, " +
