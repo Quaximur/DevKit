@@ -82,7 +82,8 @@ namespace DevKit.InterfaceSerialization
             return new InterfaceArguments(interfaceType, objectType);
         }
 
-        private static bool TryGetValuesFromInterfaceReference(Type type, out Type resultInterfaceType, out Type resultObjectType)
+        private static bool TryGetValuesFromInterfaceReference(Type type, out Type resultInterfaceType,
+            out Type resultObjectType)
         {
             resultInterfaceType = resultObjectType = null;
 
@@ -121,7 +122,8 @@ namespace DevKit.InterfaceSerialization
             }
         }
 
-        private static void ValidateAndAssignObject(SerializedProperty property, Object targetObject, string componentNameOrType, string interfaceName = null)
+        private static void ValidateAndAssignObject(SerializedProperty property, Object targetObject, 
+            string componentNameOrType, string interfaceName = null)
         {
             if (targetObject != null)
             {
@@ -133,23 +135,6 @@ namespace DevKit.InterfaceSerialization
                 Debug.LogWarning($"The {message} doesn't have a conponent that implements '{interfaceName}'");
                 property.objectReferenceValue = null;
             }
-        }
-    }
-
-    public struct InterfaceArguments
-    {
-        public readonly Type InterfaceType;
-        public readonly Type ObjectType;
-
-        public InterfaceArguments(Type interfaceType, Type objectType)
-        {
-            Debug.Assert(typeof(Object).IsAssignableFrom(objectType),
-                $"{nameof(ObjectType)} should be of type {typeof(Object)}");
-
-            Debug.Assert(interfaceType.IsInterface, $"{nameof(interfaceType)} should be an interface");
-
-            InterfaceType = interfaceType;
-            ObjectType = objectType;
         }
     }
 }

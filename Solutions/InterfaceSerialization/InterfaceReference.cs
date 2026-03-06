@@ -5,8 +5,8 @@ using Object = UnityEngine.Object;
 namespace DevKit.InterfaceSerialization
 {
     [Serializable]
-    public class InterfaceReference<TInterface, TObject> 
-        where TInterface : class 
+    public class InterfaceReference<TInterface, TObject>
+        where TInterface : class
         where TObject : Object
     {
         [SerializeField, HideInInspector] private TObject _underlyingValue;
@@ -17,13 +17,13 @@ namespace DevKit.InterfaceSerialization
             {
                 if (_underlyingValue == null)
                     return null;
-                
+
                 if (_underlyingValue is TInterface @interface)
                     return @interface;
-                
-                throw new InvalidOperationException($"{_underlyingValue} should implement interface {nameof(TInterface)}");
+
+                throw new InvalidOperationException($"{_underlyingValue} should implement interface {typeof(TInterface)}");
             }
-            
+
             set
             {
                 if (value == null)
@@ -31,14 +31,14 @@ namespace DevKit.InterfaceSerialization
                     _underlyingValue = null;
                     return;
                 }
-                
-                if (value is TInterface @interface)
-                {
-                    _underlyingValue = @interface as TObject;
-                    return;
-                }
-                
-                throw new ArgumentException($"{value} should implement interface {nameof(TInterface)}");
+
+                if (value is not TInterface @interface)
+                    throw new ArgumentException($"{value} should implement interface {typeof(TInterface)}");
+
+                if (@interface is not TObject @object)
+                    throw new ArgumentException($"{value} should be of type {typeof(TObject)}");
+
+                _underlyingValue = @object;
             }
         }
 
@@ -64,7 +64,7 @@ namespace DevKit.InterfaceSerialization
     }
 
     [Serializable]
-    public class InterfaceReference<TInterface> : InterfaceReference<TInterface, Object> 
+    public class InterfaceReference<TInterface> : InterfaceReference<TInterface, Object>
         where TInterface : class
     {
     }
