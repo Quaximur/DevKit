@@ -5,7 +5,7 @@ namespace DevKit.UI.MVVM.Bases
 {
     public abstract class AttachableToolkitScreen<T> : AttachableToolkitView<T>, IScreenAttach<T> where T : IScreenViewModel
     {
-        public override int Priority => _priority;
+        public override int ToolkitSortOrder => _priority;
 
         [SerializeField]
         [Tooltip("Views with higher priority are placed on top of views with lower priority, " +

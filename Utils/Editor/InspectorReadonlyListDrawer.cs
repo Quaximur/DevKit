@@ -50,7 +50,7 @@ namespace DevKit.Utils.Editor
             root.TrackPropertyValue(listProperty, _ =>
             {
                 listView.itemsSource = GetItemsSource(listProperty);
-                listView.Rebuild();
+                // listView.Rebuild();
             });
 
             root.Add(listView);
