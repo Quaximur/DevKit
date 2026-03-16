@@ -15,13 +15,18 @@ namespace DevKit.UITK
 
         private readonly VisualElement _root;
         private readonly VisualElement _dropContainer;
-        private readonly Func<T, T, bool> _validation; // <T dragged, T target, bool>
+
+        /// <summary>
+        /// If validation failed, the item will be leaved in place
+        /// </summary>
+        private readonly Func<T, T, bool> _validation; 
 
         private Label _dragGhost;
         private VisualElement _draggingElement;
         private VisualElement _dropTargetElement;
         private T _draggedItem;
         private bool _isDragging;
+        private bool _isLeftInPlace;
         private Vector2 _dragStartPosition;
         private VisualElement _dropIndicator;
         private DropPosition _currentDropPosition;
@@ -163,30 +168,35 @@ namespace DevKit.UITK
             ClearDropIndicators();
 
             VisualElement picked = _root.panel.Pick(mousePosition);
-            if (picked == null)
+            if (picked == null) // no any element targeted
             {
                 SetTargetToNothing();
                 return;
             }
-            else if (picked == _dropContainer)
+            else if (picked == _dropContainer) // target is root drop container
             {
                 _dropTargetElement = picked;
                 return;
             }
 
             var container = picked.GetFirstOfTypeWithUserData<T>();
-            if (container == null || container.userData is not T targetItem)
+            if (container == null || container.userData is not T targetItem) // target is not a drop container
             {
                 SetTargetToNothing();
                 return;
             }
-
-            if (!_validation(_draggedItem, targetItem))
+            
+            if (!_validation(_draggedItem, targetItem)) // target is a drop container, but dragging is not allowed
             {
-                SetTargetToNothing();
+                SetLeaveInPlace(true);
                 return;
             }
+            else
+            {
+                SetLeaveInPlace(false);
+            }
 
+            // target is a drop container and dragging is allowed
             _dropTargetElement = container;
             var linedElement = _getLinedElement(targetItem);
             if (linedElement != null)
@@ -198,6 +208,11 @@ namespace DevKit.UITK
 
             if (ShouldStartGroupExpand(targetItem))
                 OnGroupHoverStart?.Invoke(targetItem);
+        }
+
+        private void SetLeaveInPlace(bool isLeftInPlace)
+        {
+            _isLeftInPlace = isLeftInPlace;
         }
 
         private void SetTargetToNothing()
@@ -328,6 +343,7 @@ namespace DevKit.UITK
 
             OnItemDropped?.Invoke(new DropData<T>
             {
+                IsLeftInPlace = _isLeftInPlace,
                 Dragged = _draggedItem,
                 Target = GetTargetItem(),
                 PointerPosition = pointerPos,
