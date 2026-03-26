@@ -29,8 +29,9 @@ namespace DevKit.UI.MVVM
         where AViewModel : IViewModel
         where TViewModel : AViewModel, IDisposable
     {
-        public TransientBinder(TView view) : base(view)
+        public TransientBinder(TView view)
         {
+            _view = view;
         }
 
         protected abstract TViewModel GetViewModel();

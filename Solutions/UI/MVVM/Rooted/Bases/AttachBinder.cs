@@ -6,7 +6,7 @@ namespace DevKit.UI.MVVM.Bases
         where TView : BaseView, IScreenAttach<TViewModel>
         where TViewModel : IScreenViewModel
     {
-        protected AttachBinder(IRootUIBinder rootUIBinder, TView view) : base(rootUIBinder, view)
+        protected AttachBinder(IRootUIBinder rootUIBinder) : base(rootUIBinder)
         {
         }
     }
@@ -18,12 +18,10 @@ namespace DevKit.UI.MVVM.Bases
     {
         protected readonly IRootUIBinder _rootUIBinder;
 
-        public AttachBinder(IRootUIBinder rootUIBinder, TView viewPrefab) : base(viewPrefab)
+        public AttachBinder(IRootUIBinder rootUIBinder)
         {
             _rootUIBinder = rootUIBinder;
         }
-
-        protected abstract TViewModel GetViewModel();
 
         public override AViewModel Open()
         {
@@ -32,19 +30,22 @@ namespace DevKit.UI.MVVM.Bases
 
             _currentViewModel = GetViewModel();
 
-            var viewInstance = UnityEngine.Object.Instantiate(_view);
-            viewInstance.Init();
-            viewInstance.Bind(_currentViewModel);
+            _view = GetView();
+            _view.Init();
+            _view.Bind(_currentViewModel);
 
-            _currentViewModel.OnClosingCompleted.Take(1).Subscribe(_ => _rootUIBinder.ClearView(viewInstance));
-            viewInstance.OnDisposed.Take(1).Subscribe(_ =>
-            {
-                _currentViewModel?.Dispose();
-                _currentViewModel = default; // null
-                DisposeInstances();
-            });
+            _currentViewModel.OnClosingCompleted.Take(1)
+                .Subscribe(_ => _rootUIBinder.ClearView(_view));
 
-            _rootUIBinder.AddView(viewInstance);
+            _view.OnDisposed.Take(1)
+                .Subscribe(_ =>
+                {
+                    _currentViewModel?.Dispose();
+                    _currentViewModel = default; // null
+                    DisposeInstances();
+                });
+
+            _rootUIBinder.AddView(_view);
             _currentViewModel.Open();
 
             return _currentViewModel;
@@ -54,6 +55,10 @@ namespace DevKit.UI.MVVM.Bases
         {
             _currentViewModel?.StartClosing();
         }
+
+        protected abstract TViewModel GetViewModel();
+
+        protected abstract TView GetView();
 
         protected virtual void DisposeInstances()
         {

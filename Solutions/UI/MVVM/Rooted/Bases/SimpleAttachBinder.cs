@@ -7,13 +7,18 @@ namespace DevKit.UI.MVVM.Bases
         where TViewModel : IScreenViewModel
     {
         private readonly Func<TViewModel> _viewModelFactory;
+        private readonly Func<TView> _viewFactory;
 
-        public SimpleAttachBinder(Func<TViewModel> viewModelFactory, IRootUIBinder rootUIBinder, TView view) :
-            base(rootUIBinder, view)
+        public SimpleAttachBinder(Func<TViewModel> viewModelFactory, IRootUIBinder rootUIBinder, 
+            Func<TView> viewFactory) :
+            base(rootUIBinder)
         {
             _viewModelFactory = viewModelFactory;
+            _viewFactory = viewFactory;
         }
 
         protected override TViewModel GetViewModel() => _viewModelFactory();
+        
+        protected override TView GetView() => _viewFactory();
     }
 }

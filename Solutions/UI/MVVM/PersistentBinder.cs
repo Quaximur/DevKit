@@ -31,8 +31,9 @@ namespace DevKit.UI.MVVM
     {
         protected TViewModel _persistentViewModel;
 
-        public PersistentBinder(TView view, TViewModel viewModel) : base(view)
+        public PersistentBinder(TView view, TViewModel viewModel)
         {
+            _view = view;
             _persistentViewModel = viewModel;
         }
 
