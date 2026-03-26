@@ -17,18 +17,12 @@ namespace DevKit.UI.MVVM
         protected TView _view;
         protected TViewModel _currentViewModel;
 
-        public BaseBinder(TView view)
-        {
-            _view = view;
-        }
-
         public abstract AViewModel Open();
+        public abstract void Close();
 
         void ILinkEntry.Open()
         {
             Open();
         }
-
-        public abstract void Close();
     }
 }
