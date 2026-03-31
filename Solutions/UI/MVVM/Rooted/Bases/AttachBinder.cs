@@ -1,4 +1,4 @@
-using System;
+using DevKit.Utils;
 
 namespace DevKit.UI.MVVM.Bases
 {
@@ -36,28 +36,23 @@ namespace DevKit.UI.MVVM.Bases
 
             var viewNoRef = _view;
 
-            _currentViewModel.OnClosingCompleted += ClearViewOnce;
+            Subs.SubscribeOnce(() => _rootUIBinder.ClearView(viewNoRef),
+                x => _currentViewModel.OnClosingCompleted += x,
+                y => _currentViewModel.OnClosingCompleted -= y);
 
-            viewNoRef.OnDisposed += DisposeOnce;
+            Subs.SubscribeOnce(() =>
+                {
+                    _currentViewModel?.Dispose();
+                    _currentViewModel = default; // null
+                    DisposeInstances();
+                },
+                x => viewNoRef.OnDisposed += x,
+                x => viewNoRef.OnDisposed -= x);
 
             _rootUIBinder.AddView(viewNoRef);
             _currentViewModel.Open();
 
             return _currentViewModel;
-
-            void ClearViewOnce()
-            {
-                _currentViewModel.OnClosingCompleted -= ClearViewOnce;
-                _rootUIBinder.ClearView(viewNoRef);
-            }
-
-            void DisposeOnce()
-            {
-                viewNoRef.OnDisposed -= DisposeOnce;
-                _currentViewModel?.Dispose();
-                _currentViewModel = default; // null
-                DisposeInstances();
-            }
         }
 
         public override void Close()
