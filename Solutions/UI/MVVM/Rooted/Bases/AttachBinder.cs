@@ -1,4 +1,4 @@
-using R3;
+using System;
 
 namespace DevKit.UI.MVVM.Bases
 {
@@ -34,27 +34,38 @@ namespace DevKit.UI.MVVM.Bases
             _view.Init();
             _view.Bind(_currentViewModel);
 
-            _currentViewModel.OnClosingCompleted.Take(1)
-                .Subscribe(_ => _rootUIBinder.ClearView(_view));
+            var viewNoRef = _view;
 
-            _view.OnDisposed.Take(1)
-                .Subscribe(_ =>
-                {
-                    _currentViewModel?.Dispose();
-                    _currentViewModel = default; // null
-                    DisposeInstances();
-                });
+            _currentViewModel.OnClosingCompleted += ClearViewOnce;
 
-            _rootUIBinder.AddView(_view);
+            viewNoRef.OnDisposed += DisposeOnce;
+
+            _rootUIBinder.AddView(viewNoRef);
             _currentViewModel.Open();
 
             return _currentViewModel;
+
+            void ClearViewOnce()
+            {
+                _currentViewModel.OnClosingCompleted -= ClearViewOnce;
+                _rootUIBinder.ClearView(viewNoRef);
+            }
+
+            void DisposeOnce()
+            {
+                viewNoRef.OnDisposed -= DisposeOnce;
+                _currentViewModel?.Dispose();
+                _currentViewModel = default; // null
+                DisposeInstances();
+            }
         }
 
         public override void Close()
         {
             _currentViewModel?.StartClosing();
         }
+
+        private Action CreateClearViewHandler(IAttachableView view) => () => _rootUIBinder.ClearView(view);
 
         protected abstract TViewModel GetViewModel();
 

@@ -1,0 +1,24 @@
+{
+    "name": "DevKit.R3",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d97c239f2f13de7499d761d5802afb3c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "DEVKIT_R3"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.r3",
+            "expression": "",
+            "define": "DEVKIT_R3"
+        }
+    ],
+    "noEngineReferences": false
+}

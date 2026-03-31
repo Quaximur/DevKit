@@ -1,5 +1,4 @@
 using System;
-using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,10 +6,7 @@ namespace DevKit.UI.MVP
 {
     public abstract class ToolkitView : MonoBehaviour, IToolkitView, IDisposable
     {
-        public Observable<bool> IsShown => _isShown;
-        
         [SerializeField] private VisualTreeAsset _uiAsset;
-        private ReactiveProperty<bool> _isShown;
 
         protected VisualElement Root { get; private set; }
 
@@ -23,13 +19,11 @@ namespace DevKit.UI.MVP
         public virtual void Show()
         {
             Root.style.display = DisplayStyle.Flex;
-            _isShown.Value = true;
         }
 
         public virtual void Hide()
         {
             Root.style.display = DisplayStyle.None;
-            _isShown.Value = false;
         }
 
         private void Init()
@@ -37,7 +31,6 @@ namespace DevKit.UI.MVP
             Root = _uiAsset.CloneTree();
             Root.pickingMode = PickingMode.Ignore;
             Root.style.flexGrow = 1;
-            _isShown = new ReactiveProperty<bool>(Root.style.display == DisplayStyle.Flex);
             OnInit();
         }
 

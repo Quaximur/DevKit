@@ -1,22 +1,20 @@
-using DevKit.Utils;
-using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class AttachableToolkitWindow<T> : AttachableToolkitScreen<T>  where T : IScreenViewModel
+    public abstract class AttachableToolkitWindow<T> : AttachableToolkitScreen<T> where T : IScreenViewModel
     {
         [SerializeField] protected string _closeButtonName = "CloseButton";
         [SerializeField] protected string _closeBackgroundName = "CloseBackground";
-        
+
         protected Button _closeButton;
         protected VisualElement _closeBackground;
-        
+
         protected override void OnInit()
         {
             base.OnInit();
-            
+
             if (!string.IsNullOrEmpty(_closeButtonName))
                 _closeButton = Root.Q<Button>(name: _closeButtonName);
 
@@ -35,15 +33,20 @@ namespace DevKit.UI.MVVM.Bases
         /// </summary>
         protected virtual void BindClosingControls()
         {
-             _closeButton?.SubscribeCallbackOnce<ClickEvent>(OnCloseClicked)
-                .AddTo(_disposables);
-            _closeBackground?.SubscribeCallbackOnce<ClickEvent>(OnCloseClicked)
-                .AddTo(_disposables);
+            _closeButton?.RegisterCallback<ClickEvent>(OnCloseClicked);
+            _closeBackground?.RegisterCallback<ClickEvent>(OnCloseClicked);
         }
 
         protected virtual void OnCloseClicked(ClickEvent _)
         {
             ViewModel.StartClosing();
+        }
+
+        public override void Dispose()
+        {
+            _closeButton?.UnregisterCallback<ClickEvent>(OnCloseClicked);
+            _closeBackground?.UnregisterCallback<ClickEvent>(OnCloseClicked);
+            base.Dispose();
         }
     }
 }
