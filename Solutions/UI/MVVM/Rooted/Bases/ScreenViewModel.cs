@@ -1,23 +1,47 @@
-using R3;
+using System;
 
 namespace DevKit.UI.MVVM.Bases
 {
     public abstract class ScreenViewModel : BaseViewModel, IScreenViewModel
     {
-        public Observable<bool> OnOpenStateChanged => _isOpened;
-        public Observable<Unit> OnClosingCompleted => _closingCompletedSignal;
+        public event Action<bool> OnOpenStateChanged
+        {
+            add
+            {
+                if (value == null)
+                    return;
 
-        protected readonly ReactiveProperty<bool> _isOpened = new(false);
-        protected readonly Subject<Unit> _closingCompletedSignal = new();
-        
+                OnOpenedSignal += value;
+                value(_isOpened);
+            }
+            remove
+            {
+                OnOpenedSignal -= value;
+            }
+        }
+
+        public event Action OnClosingCompleted;
+
+        protected event Action<bool> OnOpenedSignal;
+
+        private bool _isOpened = false;
+
         public virtual void Open()
         {
-            _isOpened.Value = true;
+            if (_isOpened)
+                return;
+
+            _isOpened = true;
+            OnOpenedSignal?.Invoke(_isOpened);
         }
 
         public virtual void StartClosing()
         {
-            _isOpened.Value = false;
+            if (!_isOpened)
+                return;
+                
+            _isOpened = false;
+            OnOpenedSignal?.Invoke(_isOpened);
         }
 
         /// <summary>
@@ -25,7 +49,7 @@ namespace DevKit.UI.MVVM.Bases
         /// </summary>
         public virtual void CompleteClosing()
         {
-            _closingCompletedSignal.OnNext(Unit.Default);
+            OnClosingCompleted?.Invoke();
         }
     }
 }

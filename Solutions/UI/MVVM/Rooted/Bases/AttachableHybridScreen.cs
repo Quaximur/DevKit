@@ -1,9 +1,8 @@
-using R3;
 using UnityEngine;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class AttachableHybridScreen<T> : AttachableHybridView<T>, IScreenAttach<T> 
+    public abstract class AttachableHybridScreen<T> : AttachableHybridView<T>, IScreenAttach<T>
         where T : IScreenViewModel
     {
         public override int ToolkitSortOrder => _toolkitPriority;
@@ -19,20 +18,18 @@ namespace DevKit.UI.MVVM.Bases
                  "making them visually closer to the user.")]
         protected int _canvasPriority;
 
-        protected CompositeDisposable _disposables;
+        protected bool _isOpened = false; // View should be "closed" by default
 
         protected override void OnBind(T viewModel)
         {
-            _disposables = new();
-
-            ViewModel.OnOpenStateChanged
-                .Skip(1)
-                .Subscribe(OnOpenStateChanged)
-                .AddTo(_disposables);
+            ViewModel.OnOpenStateChanged += OnOpenStateChanged;
         }
 
         protected virtual void OnOpenStateChanged(bool isOpened)
         {
+            if (_isOpened = isOpened)
+                return;
+
             if (isOpened)
                 OnOpening();
             else
@@ -51,7 +48,9 @@ namespace DevKit.UI.MVVM.Bases
 
         public override void Dispose()
         {
-            Disposes.ClearDispose(ref _disposables);
+            if (ViewModel != null)
+                ViewModel.OnOpenStateChanged -= OnOpenStateChanged;
+
             base.Dispose();
         }
     }

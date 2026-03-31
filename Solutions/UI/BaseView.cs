@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using R3;
 
 namespace DevKit.UI
 {
@@ -10,8 +9,7 @@ namespace DevKit.UI
     /// </summary>
     public abstract class BaseView : MonoBehaviour, IView, IDisposable
     {
-        public Observable<Unit> OnDisposed => _onDisposed;
-        public Subject<Unit> _onDisposed = new();
+        public event Action OnDisposed;
 
         public virtual void Init()
         {
@@ -24,7 +22,7 @@ namespace DevKit.UI
 
         public virtual void Dispose()
         {
-            _onDisposed.OnNext(Unit.Default);
+            OnDisposed?.Invoke();
         }
     }
 }
