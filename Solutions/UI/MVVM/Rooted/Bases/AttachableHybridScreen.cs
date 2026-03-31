@@ -27,13 +27,15 @@ namespace DevKit.UI.MVVM.Bases
 
         protected virtual void OnOpenStateChanged(bool isOpened)
         {
-            if (_isOpened = isOpened)
+            if (_isOpened == isOpened)
                 return;
-
+            
             if (isOpened)
                 OnOpening();
             else
                 OnClosing();
+            
+            _isOpened = isOpened;
         }
 
         protected virtual void OnOpening()
