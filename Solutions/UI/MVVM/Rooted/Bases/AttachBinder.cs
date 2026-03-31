@@ -65,8 +65,6 @@ namespace DevKit.UI.MVVM.Bases
             _currentViewModel?.StartClosing();
         }
 
-        private Action CreateClearViewHandler(IAttachableView view) => () => _rootUIBinder.ClearView(view);
-
         protected abstract TViewModel GetViewModel();
 
         protected abstract TView GetView();

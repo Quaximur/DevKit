@@ -22,11 +22,13 @@ namespace DevKit.UI.MVVM.Bases
         {
             if (_isOpened == isOpened)
                 return;
-
+            
             if (isOpened)
                 OnOpening();
             else
                 OnClosing();
+            
+            _isOpened = isOpened;
         }
 
         protected virtual void OnOpening()
