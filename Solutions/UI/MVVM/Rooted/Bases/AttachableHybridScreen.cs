@@ -18,40 +18,37 @@ namespace DevKit.UI.MVVM.Bases
                  "making them visually closer to the user.")]
         protected int _canvasPriority;
 
-        protected bool _isOpened = false; // View should be "closed" by default
+        protected IOpenStateController _openStateController;
 
         protected override void OnBind(T viewModel)
         {
-            ViewModel.OnOpenStateChanged += OnOpenStateChanged;
+            _openStateController ??= GetOpenStateController();
+            _openStateController.Bind(this, viewModel);
         }
 
         protected virtual void OnOpenStateChanged(bool isOpened)
         {
-            if (_isOpened == isOpened)
-                return;
-            
-            if (isOpened)
-                OnOpening();
-            else
-                OnClosing();
-            
-            _isOpened = isOpened;
+            _openStateController.OnOpenStateChanged(isOpened);
         }
 
         protected virtual void OnOpening()
         {
-            Show();
+            _openStateController.OnOpening();
         }
 
         protected virtual void OnClosing()
         {
-            ViewModel.CompleteClosing();
+            _openStateController.OnClosing();
+        }
+
+        protected virtual IOpenStateController GetOpenStateController()
+        {
+            return new BaseOpenStateController();
         }
 
         public override void Dispose()
         {
-            if (ViewModel != null)
-                ViewModel.OnOpenStateChanged -= OnOpenStateChanged;
+            _openStateController.Dispose();
 
             base.Dispose();
         }
