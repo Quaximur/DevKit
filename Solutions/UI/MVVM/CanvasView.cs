@@ -1,8 +1,8 @@
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Представление для отображения в канвасе без привязки к ViewModel.
-    /// Используется для сериализации под общей абстракцией.
+    /// View for displaying in a Canvas without binding to a ViewModel.
+    /// E.g., used for serialization under a common abstraction.
     /// </summary>
     public abstract class CanvasView : BaseView
     {
@@ -16,7 +16,10 @@ namespace DevKit.UI.MVVM
             gameObject.SetActive(false);
         }
     }
-
+    /// <summary>
+    /// <see cref="CanvasView"/> with binding to a ViewModel.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class CanvasView<T> : CanvasView, IView<T> where T : IViewModel
     {
         protected T ViewModel { get; private set; }

@@ -13,16 +13,13 @@ namespace DevKit.Utils.Editor
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            // Получаем атрибут [ScreenSelector]
             var attr = fieldInfo.GetCustomAttribute<SelectorAttribute>();
 
             string[] options = Array.Empty<string>();
 
-            // Вариант 1: явно переданный массив
-            if (attr.Options is { Length: > 0 })
+            
+            if (attr.Options is { Length: > 0 }) // if specified options
                 options = attr.Options;
-
-            // Вариант 2: статическое поле или свойство
             else if (attr.SourceType != null && !string.IsNullOrEmpty(attr.SourceMember))
             {
                 var member = attr.SourceType.GetMember(attr.SourceMember,
@@ -34,7 +31,6 @@ namespace DevKit.Utils.Editor
                     options = arr2;
             }
 
-            // Создаем PopupField
             var popup = new PopupField<string>(
                 label: ObjectNames.NicifyVariableName(property.name),
                 choices: options.ToList(),

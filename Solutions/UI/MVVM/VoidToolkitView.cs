@@ -1,8 +1,8 @@
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Представление, не нуждающееся во ViewModel. 
-    /// Подразумевает содержание самодостаточных UI-элементов или автоматическую привязку логики извне (Пр.: через Query).
+    /// View with no need for a ViewModel.
+    /// Used for authoritative VisualElements or external logic binding (e.g., via Query).
     /// </summary>
     public class VoidToolkitView : ToolkitView
     {

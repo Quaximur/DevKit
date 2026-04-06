@@ -5,9 +5,8 @@ using Debug = UnityEngine.Debug;
 namespace DevKit.Utils
 {
     /// <summary>
-    /// Надстройка над логгером UnityEngine.Debug с кастомизацией текста.
-    /// Используется для визуального разделения пользовательских сообщений 
-    /// и сообщений из движка/сторонних библиотек.
+    /// A wrapper over the UnityEngine.Debug logger with text customization.
+    /// Used for visual separation of user messages from engine/third-party library messages.
     /// </summary>
     public static class FLogger
     {

@@ -1,7 +1,7 @@
 namespace DevKit.Saves
 {
     /// <summary>
-    /// Общий класс для различных версий состояний приложения.
+    /// Example class for saving data with Version.
     /// </summary>
     public abstract class SaveStateBase : IVersioned
     {

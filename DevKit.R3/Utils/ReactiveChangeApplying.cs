@@ -3,8 +3,9 @@ using System;
 namespace DevKit.Utils
 {
     /// <summary>
-    /// При применении изменений вызывает действие applyAction.
-    /// Также обновляет кеш, из-за чего свойство показывается как неизменённое.
+    /// <inheritdoc  />
+    /// When applying changes, invokes the applyAction.
+    /// Also updates the cache, causing the property to appear unchanged.
     /// </summary>
     public class ReactiveChangeApplying<T> : ReactiveChangeBase<T>
     {

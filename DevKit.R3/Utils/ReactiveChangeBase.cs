@@ -3,6 +3,10 @@ using R3;
 
 namespace DevKit.Utils
 {
+    /// <summary>
+    /// <para>ReactiveProperty with cache and delayed applying.</para>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class ReactiveChangeBase<T> : ReactiveProperty<T>, IReactiveChange
     {
         public override T Value

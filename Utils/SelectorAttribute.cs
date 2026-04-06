@@ -4,7 +4,7 @@ using UnityEngine;
 namespace DevKit.Utils
 {
     /// <summary>
-    /// Позволяет выбрать значение из заданного набора строк.
+    /// Value selection in Unity Inspector.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class SelectorAttribute : PropertyAttribute
@@ -13,17 +13,11 @@ namespace DevKit.Utils
         public Type SourceType { get; }
         public string SourceMember { get; }
 
-        /// <summary>
-        /// Получает конкретный массив значений.
-        /// </summary>
         public SelectorAttribute(params string[] options)
         {
             Options = options;
         }
 
-        /// <summary>
-        /// Получает тип и имя статического массива/свойства, из которого нужно взять варианты.
-        /// </summary>
         public SelectorAttribute(Type sourceType, string sourceMember)
         {
             SourceType = sourceType;
