@@ -12,12 +12,18 @@ namespace DevKit.UI.MVVM
     /// </summary>
     public class RootUIBinder : MonoBehaviour, IRootUIBinder, IRootUI
     {
+        [SerializeField] private Transform _layersRoot;
+        
+        [Header("UIDocument Pool"), Space(4)]
         [SerializeField] private UIDocument _documentPrefab;
         [SerializeField] private PanelSettings _panelSettingsAsset;
+        [SerializeField, Min(0)] private int _maxUIDocuments = 10;
+        [SerializeField, Min(0)] private int _defaultUIDocuments = 1;
+        
+        [Header("Canvas Pool"), Space(4)]
         [SerializeField] private Canvas _canvasPrefab;
-        [SerializeField] private Transform _layersRoot;
-        [SerializeField] private int _maxUIDocuments = 10;
-        [SerializeField] private int _maxCanvases = 10;
+        [SerializeField, Min(0)] private int _maxCanvases = 10;
+        [SerializeField, Min(0)] private int _defaultCanvases = 1;
 
         private readonly HashSet<IAttachableView> _boundViews = new();
         private ObjectPool<UIDocument> _documentPool;
@@ -41,7 +47,7 @@ namespace DevKit.UI.MVVM
                 actionOnGet: x => x.gameObject.SetActive(true),
                 actionOnRelease: x => x.gameObject.SetActive(false),
                 actionOnDestroy: x => Destroy(x.gameObject),
-                defaultCapacity: 1,
+                defaultCapacity: _defaultUIDocuments,
                 maxSize: _maxUIDocuments);
 
             _canvasPool = new ObjectPool<Canvas>(
@@ -53,7 +59,7 @@ namespace DevKit.UI.MVVM
                 actionOnGet: x => x.gameObject.SetActive(true),
                 actionOnRelease: x => x.gameObject.SetActive(false),
                 actionOnDestroy: x => Destroy(x.gameObject),
-                defaultCapacity: 1,
+                defaultCapacity: _defaultCanvases,
                 maxSize: _maxCanvases);
         }
 
