@@ -13,45 +13,48 @@ namespace DevKit.UI.MVVM
     public class RootUIBinder : MonoBehaviour, IRootUIBinder, IRootUI
     {
         [SerializeField] private UIDocument _documentPrefab;
+        [SerializeField] private PanelSettings _panelSettingsAsset;
         [SerializeField] private Canvas _canvasPrefab;
         [SerializeField] private Transform _layersRoot;
+        [SerializeField] private int _maxUIDocuments = 10;
+        [SerializeField] private int _maxCanvases = 10;
 
-        private readonly HashSet<IAttachableView> _bindedViews = new();
+        private readonly HashSet<IAttachableView> _boundViews = new();
         private ObjectPool<UIDocument> _documentPool;
         private ObjectPool<Canvas> _canvasPool;
         private readonly Dictionary<float, Canvas> _canvasLayersMap = new();
         private readonly Dictionary<float, UIDocument> _documentLayersMap = new();
         private readonly Dictionary<GameObject, Canvas> _canvasViewParentMap = new();
         private readonly Dictionary<VisualElement, UIDocument> _documentViewParentMap = new();
+        private readonly HashSet<UIDocument> _activeDocuments = new();
 
-        #region MonoBehaviour
+#region MonoBehaviour
         private void Awake()
         {
             _documentPool = new ObjectPool<UIDocument>(
                 createFunc: () =>
                 {
-                    var document = Instantiate(_documentPrefab);
-                    document.transform.SetParent(_layersRoot, false);
+                    var document = Instantiate(_documentPrefab, _layersRoot, false);
+                    document.panelSettings = Instantiate(_panelSettingsAsset);
                     return document;
                 },
                 actionOnGet: x => x.gameObject.SetActive(true),
                 actionOnRelease: x => x.gameObject.SetActive(false),
                 actionOnDestroy: x => Destroy(x.gameObject),
                 defaultCapacity: 1,
-                maxSize: 10);
+                maxSize: _maxUIDocuments);
 
             _canvasPool = new ObjectPool<Canvas>(
                 createFunc: () =>
                 {
-                    var canvas = Instantiate(_canvasPrefab);
-                    canvas.transform.SetParent(_layersRoot, false);
+                    var canvas = Instantiate(_canvasPrefab, _layersRoot, false);
                     return canvas;
                 },
                 actionOnGet: x => x.gameObject.SetActive(true),
                 actionOnRelease: x => x.gameObject.SetActive(false),
                 actionOnDestroy: x => Destroy(x.gameObject),
                 defaultCapacity: 1,
-                maxSize: 10);
+                maxSize: _maxCanvases);
         }
 
         private void OnDestroy()
@@ -59,9 +62,9 @@ namespace DevKit.UI.MVVM
             _documentPool?.Clear();
             _canvasPool?.Clear();
         }
-        #endregion
+#endregion
 
-        #region IRootUIBinder
+#region IRootUIBinder
         public void SetView(IAttachableView view)
         {
             ClearViews();
@@ -83,7 +86,7 @@ namespace DevKit.UI.MVVM
         public void AddView(IAttachableView view)
         {
             view.Attach(this);
-            _bindedViews.Add(view);
+            _boundViews.Add(view);
         }
 
         public void AddViews(params IAttachableView[] views)
@@ -101,17 +104,17 @@ namespace DevKit.UI.MVVM
         public void ClearView(IAttachableView view)
         {
             view?.Detach(this);
-            _bindedViews.Remove(view);
+            _boundViews.Remove(view);
         }
 
         public void ClearViews()
         {
-            foreach (var view in _bindedViews.ToArray())
+            foreach (var view in _boundViews.ToArray())
                 ClearView(view);
         }
-        #endregion
+#endregion
 
-        #region IRootUI
+#region IRootUI
         /// <summary>
         /// This is only used by UI Toolkit Views in terms of implementation Visitor pattern. 
         /// For the scene UI binding use SetViews or AddViews method instead.
@@ -122,6 +125,7 @@ namespace DevKit.UI.MVVM
             {
                 document = _documentPool.Get();
                 document.panelSettings.sortingOrder = sortOrder;
+                _activeDocuments.Add(document);
 
                 _documentLayersMap.Add(sortOrder, document);
             }
@@ -162,14 +166,21 @@ namespace DevKit.UI.MVVM
         void IRootUI.Detach(VisualElement visualElement)
         {
             visualElement.RemoveFromHierarchy();
-
-            if (_documentViewParentMap.TryGetValue(visualElement, out var document) &&
-                document.rootVisualElement.childCount == 0)
+            
+            if (_documentViewParentMap.TryGetValue(visualElement, out var document))
             {
-                _documentLayersMap.Remove(document.panelSettings.sortingOrder);
                 _documentViewParentMap.Remove(visualElement);
+                // FLogger.LogGood(
+                //     $"Detaching '{visualElement[0].name}, childCount: {document.rootVisualElement.childCount}', sortOrder: {document.panelSettings.sortingOrder}");
 
-                _documentPool.Release(document);
+                if (document.rootVisualElement.childCount == 0)
+                {
+                    _documentLayersMap.Remove(document.panelSettings.sortingOrder);
+                    if (_activeDocuments.Remove(document))
+                        _documentPool.Release(document);
+                    else
+                        FLogger.LogWarning("Multiple UIDocument release detected");
+                }
             }
         }
 
@@ -186,6 +197,6 @@ namespace DevKit.UI.MVVM
 
             Destroy(gameObjectUI);
         }
-        #endregion
+#endregion
     }
 }
