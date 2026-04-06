@@ -1,7 +1,7 @@
 namespace DevKit.UI
 {
     /// <summary>
-    /// Шаблон для реализации ВСЕХ представлений.
+    /// Template for ALL views.
     /// </summary>
     public interface IView
     {

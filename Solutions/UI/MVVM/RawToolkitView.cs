@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Чистая реализация IToolkitView без наследования от MonoBehaviour.
+    /// IToolkitView implementation without inheriting from the UnityEngine.Object
     /// </summary>
     public class RawToolkitView : IToolkitView
     {
