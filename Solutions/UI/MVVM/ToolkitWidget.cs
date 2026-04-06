@@ -3,6 +3,10 @@ using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM
 {
+    /// <summary>
+    /// Widgets for UI Toolkit have view functionality, but unlike View, they inherit from
+    /// VisualElement rather than MonoBehaviour.
+    /// </summary>
     public abstract partial class ToolkitWidget : VisualElement, IView, IDisposable
     {
         protected VisualElement Root => this;
@@ -32,9 +36,8 @@ namespace DevKit.UI.MVVM
     }
 
     /// <summary>
-    /// Базовый класс для всех виджетов, использующих UI Toolkit для архитектуры MVVM (Model-View-ViewModel).
-    /// Виджеты для UI Toolkit имеют функционал представления, но в отличие от View, наследуются от
-    /// VisualElement, а не от MonoBehaviour.
+    /// Base class for all widgets using UI Toolkit for MVVM (Model-View-ViewModel) architecture. <br/>
+    /// <inheritdoc/>
     /// </summary>
     [UxmlElement]
     public abstract partial class ToolkitWidget<T> : ToolkitWidget, IView<T> where T : IViewModel

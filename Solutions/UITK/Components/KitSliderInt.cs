@@ -5,9 +5,6 @@ namespace DevKit.UITK
     [UxmlElement]
     public partial class KitSliderInt : SliderInt
     {
-        /// <summary>
-        /// Включить/отключить текстовое поле с текущим значением (только для чтения)
-        /// </summary>
         [UxmlAttribute]
         public bool ShowReadonlyValue
         {

@@ -1,7 +1,7 @@
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Шаблон, имитирующий ссылку для открытия окна.
+    /// Contract for a link for opening a window.
     /// </summary>
     public interface ILinkEntry
     {

@@ -38,7 +38,6 @@ namespace DevKit.UITK
         private readonly Func<T, bool> _isExpanded;
         private readonly Func<T, bool> _hasChildren;
 
-        // Для определения зон внутри элемента
         private enum DropZone
         {
             Top,
@@ -237,8 +236,6 @@ namespace DevKit.UITK
             var elementHeight = worldBound.height;
             var relativeY = mousePosition.y - worldBound.y;
 
-            // Определяем зоны (верхняя DROP_TARGET_SIDE_ZONE_RATIO, центральная 1 - 2 * DROP_TARGET_SIDE_ZONE_RATIO, 
-            // нижняя DROP_TARGET_SIDE_ZONE_RATIO)
             var topZoneHeight = elementHeight * DROP_TARGET_SIDE_ZONE_RATIO;
             var bottomZoneHeight = elementHeight * DROP_TARGET_SIDE_ZONE_RATIO;
 
@@ -248,7 +245,6 @@ namespace DevKit.UITK
 
             if (!isGroup)
             {
-                // Для обычных элементов и свернутых групп
                 if (mousePosition.y < worldBound.center.y)
                     return DropZone.Top;
                 else
@@ -270,7 +266,7 @@ namespace DevKit.UITK
                     if (relativeY < topZoneHeight)
                         return DropZone.Top;
                     else
-                        return DropZone.CenterBottom; // Нижняя часть развернутой группы = поместить внутрь
+                        return DropZone.CenterBottom;
                 }
             }
         }

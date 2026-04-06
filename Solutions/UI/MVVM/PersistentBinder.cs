@@ -3,9 +3,11 @@ using System;
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Binder for View and ViewModel, assuming a Singleton ViewModel (created only once).
-    /// Specifies the TViewModel with which the View works. To work with a concrete ViewModel
-    /// rather than an abstract one (if specified in the View, e.g., <see cref="IView{TViewModel}"/>), 
+    /// <para>Binder for View and ViewModel, assuming a Singleton ViewModel (created only once). 
+    /// Specifies the TViewModel with which the View works.</para>
+    /// 
+    /// To work with a concrete ViewModel
+    /// rather than an abstract one (if specified in the View, e.g., IView&lt;TViewModel&gt;), 
     /// use the class with extended generic parameters 
     /// <see cref="PersistentBinder{TView, TViewModel, AViewModel}"/>.
     /// </summary>
@@ -19,8 +21,9 @@ namespace DevKit.UI.MVVM
     }
 
     /// <summary>
-    /// Binder for View and ViewModel, assuming a Singleton ViewModel (created only once).
-    /// Here the View may have a dependency on an abstract AViewModel (e.g., <see cref="IView{AViewModel}"/>),
+    /// <para>Binder for View and ViewModel, assuming a Singleton ViewModel (created only once).</para>
+    /// 
+    /// Here the View may have a dependency on an abstract AViewModel (e.g., IView&lt;AViewModel&gt;),
     /// while actually being linked to a concrete TViewModel that implements/inherits from
     /// AViewModel (where AViewModel : IViewModel).
     /// </summary>

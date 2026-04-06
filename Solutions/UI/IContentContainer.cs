@@ -3,8 +3,7 @@ using UnityEngine.UIElements;
 namespace DevKit.UI
 {
     /// <summary>
-    /// Шаблон для реализации контейнера UI-элементов (UI Toolkit).
-    /// Используется во View.
+    /// Contract for VisualElement container implementation.
     /// </summary>
     public interface IContentContainer
     {

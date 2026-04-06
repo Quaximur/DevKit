@@ -9,7 +9,6 @@ namespace DevKit.UI.MVVM
     /// <typeparam name="TView">View (UI)</typeparam>
     /// <typeparam name="TViewModel">Concrete ViewModel that inherits from (implements) AViewModel</typeparam>
     /// <typeparam name="AViewModel">Abstract ViewModel that the View depends on</typeparam>
-    /// <summary>
     public abstract class BaseBinder<TView, TViewModel, AViewModel> : ILinkEntry, IViewBinder<AViewModel>
         where TView : IView<AViewModel>
         where AViewModel : IViewModel

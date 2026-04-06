@@ -4,27 +4,27 @@ using UnityEngine.UIElements;
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Представление через использование UI Toolkit без привязки к ViewModel.
-    /// Используется для сериализации под общей абстракцией.
+    /// View using UI Toolkit without binding to a ViewModel.
+    /// E.g., used for serialization under a common abstraction.
     /// </summary>
     public abstract class ToolkitView : BaseView, IToolkitView
     {
         /// <summary>
-        /// Ассет, содержащий UI для текущего View.
+        /// Asset containing the UI for the current View.
         /// </summary>
         [SerializeField] protected VisualTreeAsset _uiAsset;
 
         /// <summary>
-        /// Доступ к корневому элементу из VisualTreeAsset _uiAsset.
+        /// Access to the root element from the VisualTreeAsset _uiAsset.
         /// </summary>
         protected VisualElement Root { get; private set; }
 
         /// <summary>
-        /// Публичный метод для инициализации View.
-        /// Возвращает корневой элемент Root.
-        /// Этот метод необходимо вызывать перед действиями с какими-либо элементами (VisualElement) экрана,
-        /// так как до вызова Init() экран вообще не будет существовать.
+        /// View initialization. <br/>
+        /// This method must be called before any actions with screen elements (VisualElement),
+        /// because the screen will not exist at all before Init() is called.
         /// </summary>
+        /// <returns>Root element of the View asset (ToolkitView.Root)</returns>
         public VisualElement InitAndGetRoot()
         {
             Init();
@@ -32,7 +32,7 @@ namespace DevKit.UI.MVVM
         }
 
         /// <summary>
-        /// Базовая инициализация UI.
+        /// Basic UI initialization.
         /// </summary>
         public override sealed void Init()
         {
@@ -46,7 +46,7 @@ namespace DevKit.UI.MVVM
         }
 
         /// <summary>
-        /// Показать экран.
+        /// Show the screen (call only after initialization).
         /// </summary>
         public override void Show()
         {
@@ -54,7 +54,7 @@ namespace DevKit.UI.MVVM
         }
 
         /// <summary>
-        /// Скрыть экран.
+        /// Hide the screen (call only after initialization).
         /// </summary>
         public override void Hide()
         {
@@ -62,8 +62,8 @@ namespace DevKit.UI.MVVM
         }
 
         /// <summary>
-        /// Дополнительная инициализация (вызывается после Init()).
-        /// Здесь может осуществляться поиск ссылок на различные VisualElement через Root.Q.
+        /// Additional custom initialization (called after Init()). <br/>
+        /// Here could be gathering of references to various VisualElement via Root.Q.
         /// </summary>
         protected virtual void OnInit()
         {
@@ -71,9 +71,9 @@ namespace DevKit.UI.MVVM
     }
 
     /// <summary>
-    /// Базовый класс для всех View, использующих UI Toolkit для архитектуры MVVM (Model-View-ViewModel).
+    /// Base class for all Views using UI Toolkit for MVVM (Model-View-ViewModel) architecture.
     /// </summary>
-    /// <typeparam name="T">Модель представления с бизнес-логикой для View</typeparam>
+    /// <typeparam name="T">ViewModel with logic for the View</typeparam>
     public abstract class ToolkitView<T> : ToolkitView, IView<T> where T : IViewModel
     {
         protected T ViewModel { get; private set; }
