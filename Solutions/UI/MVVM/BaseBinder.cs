@@ -3,12 +3,13 @@ using System;
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Содержит логику для создания/уничтожения экранов UI (Открыватель/закрыватель UI)
-    /// с работой по связыванию View с ViewModel.
+    /// Contains logic for creating/destroying UI screens (UI opener/closer)
+    /// with functionality for binding View to ViewModel.
     /// </summary>
-    /// <typeparam name="TView">Представление (UI)</typeparam>
-    /// <typeparam name="TViewModel">Конкретная модель представления, которя наследуется от (реализует) AViewModel</typeparam>
-    /// <typeparam name="AViewModel">Абстрактная модель представления, от которой зависит View</typeparam>
+    /// <typeparam name="TView">View (UI)</typeparam>
+    /// <typeparam name="TViewModel">Concrete ViewModel that inherits from (implements) AViewModel</typeparam>
+    /// <typeparam name="AViewModel">Abstract ViewModel that the View depends on</typeparam>
+    /// <summary>
     public abstract class BaseBinder<TView, TViewModel, AViewModel> : ILinkEntry, IViewBinder<AViewModel>
         where TView : IView<AViewModel>
         where AViewModel : IViewModel

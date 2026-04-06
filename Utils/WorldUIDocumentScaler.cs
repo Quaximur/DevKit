@@ -7,39 +7,43 @@ namespace DevKit.Utils
     [RequireComponent(typeof(UIDocument))]
     public class WorldSpaceUIScaler : MonoBehaviour
     {
-        [Header("Основные настройки")]
-        [Tooltip("Имя целевого VisualElement (оставьте пустым для корневого)")]
+        [Tooltip("Name of the VisualElement from uxml. If empty, the root element will be used")]
         public string targetElementName;
-
-
-        [Tooltip("Обновлять каждый кадр (для динамических разрешений)")]
         public bool updateEveryFrame = false;
 
-        [Header("Настройки камеры")]
-        [Tooltip("Ссылка на камеру (если null - будет использоваться Camera.main)")]
-        public Camera targetCamera;
+        [Tooltip("Camera reference. If null, the Camera.main will be used. Camera must be orthographic")]
+        public Camera orthographicCamera;
 
-        private UIDocument uiDocument;
+        private UIDocument _uiDocument;
         private VisualElement targetElement;
         private PanelSettings panelSettings;
         private float pixelsPerUnit;
 
         private void OnEnable()
         {
-            uiDocument = GetComponent<UIDocument>();
-            targetCamera = targetCamera ?? Camera.main;
+            _uiDocument = GetComponent<UIDocument>();
 
-            if (uiDocument == null || targetCamera == null || !targetCamera.orthographic)
+            if (orthographicCamera == null)
+                orthographicCamera = Camera.main;
+
+            if (_uiDocument == null)
             {
-                Debug.LogError("UIDocument или ортографическая камера не найдены!");
+                Debug.LogError("UIDocument is null!");
                 enabled = false;
                 return;
             }
 
-            panelSettings = uiDocument.panelSettings;
+            if (orthographicCamera == null || !orthographicCamera.orthographic)
+            {
+                Debug.LogError("Orthographic Camera not found!");
+                enabled = false;
+                return;
+            }
+
+            panelSettings = _uiDocument.panelSettings;
             if (panelSettings == null)
             {
-                Debug.LogError("PanelSettings не назначены в UIDocument!");
+                Debug.LogError("PanelSettings not found in UIDocument!");
                 enabled = false;
                 return;
             }
@@ -53,12 +57,12 @@ namespace DevKit.Utils
         private void FindTargetElement()
         {
             targetElement = string.IsNullOrEmpty(targetElementName)
-                ? uiDocument.rootVisualElement
-                : uiDocument.rootVisualElement.Q<VisualElement>(targetElementName);
+                ? _uiDocument.rootVisualElement
+                : _uiDocument.rootVisualElement.Q<VisualElement>(targetElementName);
 
             if (targetElement == null)
             {
-                Debug.LogError($"VisualElement '{targetElementName}' не найден!");
+                Debug.LogError($"VisualElement '{targetElementName}' not found!");
                 enabled = false;
             }
         }
@@ -66,24 +70,20 @@ namespace DevKit.Utils
         private void Update()
         {
             if (updateEveryFrame)
-            {
                 UpdateLayout();
-            }
         }
 
         private void UpdateLayout()
         {
-            if (targetElement == null || targetCamera == null) return;
+            if (targetElement == null || orthographicCamera == null)
+                return;
 
-            // Размер видимой области в мировых координатах
-            float targetHeight = targetCamera.orthographicSize * 2;
-            float targetWidth = targetHeight * targetCamera.aspect;
+            float targetHeight = orthographicCamera.orthographicSize * 2;
+            float targetWidth = targetHeight * orthographicCamera.aspect;
 
-            // Устанавливаем размер в пикселях
             targetElement.style.width = targetWidth * pixelsPerUnit;
             targetElement.style.height = targetHeight * pixelsPerUnit;
 
-            // Смещение для компенсации отступов
             float offsetX = targetWidth * 0.5f;
             float offsetY = targetHeight * 0.5f;
             var center = new Vector3(

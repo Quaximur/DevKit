@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 
 namespace DevKit.UI.MVVM
 {
+    /// <summary>
+    /// Root UI Object with Canvas and UIDocument layers sorting and Object pooling implementation.
+    /// </summary>
     public class RootUIBinder : MonoBehaviour, IRootUIBinder, IRootUI
     {
         [SerializeField] private UIDocument _documentPrefab;

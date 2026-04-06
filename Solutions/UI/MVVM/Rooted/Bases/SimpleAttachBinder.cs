@@ -2,6 +2,10 @@ using System;
 
 namespace DevKit.UI.MVVM.Bases
 {
+    /// <summary>
+    /// Most commonly used Binder for UI with IRootUIBinder workflow 
+    /// with custom View and ViewModel factories.
+    /// </summary>
     public class SimpleAttachBinder<TView, TViewModel> : AttachBinder<TView, TViewModel>
         where TView : BaseView, IScreenAttach<TViewModel>
         where TViewModel : IScreenViewModel

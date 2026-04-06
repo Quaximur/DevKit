@@ -3,94 +3,97 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-public static class Reflections
+namespace DevKit.Utils
 {
-    public static void SetValueRecursive(object target, string memberName, object value, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+    public static class Reflections
     {
-        if (target == null)
-            throw new ArgumentNullException(nameof(target));
-
-        var targetType = target.GetType();
-
-        var property = GetPropertyRecursive(targetType, memberName, bindingFlags);
-        if (property != null)
+        public static void SetValueRecursive(object target, string memberName, object value, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
         {
-            if (property.CanWrite)
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            var targetType = target.GetType();
+
+            var property = GetPropertyRecursive(targetType, memberName, bindingFlags);
+            if (property != null)
             {
-                property.SetValue(target, value);
+                if (property.CanWrite)
+                {
+                    property.SetValue(target, value);
+                    return;
+                }
+
+                var backingFieldName = $"<{memberName}>k__BackingField";
+                var backingField = GetFieldRecursive(targetType, backingFieldName, bindingFlags);
+                if (backingField != null && backingField.FieldType == property.PropertyType)
+                {
+                    backingField.SetValue(target, value);
+                    return;
+                }
+
+                throw new InvalidOperationException($"Property '{memberName}' is read-only and no backing field found");
+            }
+
+            var field = GetFieldRecursive(targetType, memberName, bindingFlags);
+            if (field != null)
+            {
+                field.SetValue(target, value);
                 return;
             }
 
-            var backingFieldName = $"<{memberName}>k__BackingField";
-            var backingField = GetFieldRecursive(targetType, backingFieldName, bindingFlags);
-            if (backingField != null && backingField.FieldType == property.PropertyType)
-            {
-                backingField.SetValue(target, value);
-                return;
-            }
-
-            throw new InvalidOperationException($"Property '{memberName}' is read-only and no backing field found");
+            throw new ArgumentException($"Member '{memberName}' not found in type '{targetType.Name}' or its base classes");
         }
 
-        var field = GetFieldRecursive(targetType, memberName, bindingFlags);
-        if (field != null)
+        public static List<MemberInfo> GetMembersRecursive(Type type, BindingFlags bindingFlags)
         {
-            field.SetValue(target, value);
-            return;
+            if (type == null)
+                return null;
+
+            var members = type.GetMembers(bindingFlags)
+                .ToList();
+
+            if (type.BaseType != null && type.BaseType != typeof(object))
+                members.InsertRange(0, GetMembersRecursive(type.BaseType, bindingFlags));
+
+            return members;
         }
 
-        throw new ArgumentException($"Member '{memberName}' not found in type '{targetType.Name}' or its base classes");
-    }
+        public static PropertyInfo GetPropertyRecursive(Type type, string propertyName, BindingFlags bindingFlags)
+        {
+            if (type == null)
+                return null;
 
-    public static List<MemberInfo> GetMembersRecursive(Type type, BindingFlags bindingFlags)
-    {
-        if (type == null)
+            var property = type.GetProperty(propertyName, bindingFlags);
+            if (property != null)
+                return property;
+
+            if (type.BaseType != null && type.BaseType != typeof(object))
+                return GetPropertyRecursive(type.BaseType, propertyName, bindingFlags);
+
             return null;
+        }
 
-        var members = type.GetMembers(bindingFlags)
-            .ToList();
+        public static FieldInfo GetFieldRecursive(Type type, string fieldName, BindingFlags bindingFlags)
+        {
+            if (type == null)
+                return null;
 
-        if (type.BaseType != null && type.BaseType != typeof(object))
-            members.InsertRange(0, GetMembersRecursive(type.BaseType, bindingFlags));
+            var field = type.GetField(fieldName, bindingFlags);
+            if (field != null)
+                return field;
 
-        return members;
-    }
+            if (type.BaseType != null && type.BaseType != typeof(object))
+                return GetFieldRecursive(type.BaseType, fieldName, bindingFlags);
 
-    public static PropertyInfo GetPropertyRecursive(Type type, string propertyName, BindingFlags bindingFlags)
-    {
-        if (type == null)
             return null;
+        }
 
-        var property = type.GetProperty(propertyName, bindingFlags);
-        if (property != null)
-            return property;
-
-        if (type.BaseType != null && type.BaseType != typeof(object))
-            return GetPropertyRecursive(type.BaseType, propertyName, bindingFlags);
-
-        return null;
-    }
-
-    public static FieldInfo GetFieldRecursive(Type type, string fieldName, BindingFlags bindingFlags)
-    {
-        if (type == null)
-            return null;
-
-        var field = type.GetField(fieldName, bindingFlags);
-        if (field != null)
-            return field;
-
-        if (type.BaseType != null && type.BaseType != typeof(object))
-            return GetFieldRecursive(type.BaseType, fieldName, bindingFlags);
-
-        return null;
-    }
-
-    public static void SetMemberValue(MemberInfo memberInfo, object target, object value)
-    {
-        if (memberInfo is FieldInfo fieldInfo)
-            fieldInfo.SetValue(target, value);
-        else
-            ((PropertyInfo)memberInfo).SetValue(target, value);
+        public static void SetMemberValue(MemberInfo memberInfo, object target, object value)
+        {
+            if (memberInfo is FieldInfo fieldInfo)
+                fieldInfo.SetValue(target, value);
+            else
+                ((PropertyInfo)memberInfo).SetValue(target, value);
+        }
     }
 }

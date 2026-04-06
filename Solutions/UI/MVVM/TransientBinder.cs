@@ -1,13 +1,13 @@
 using System;
+using DevKit.Utils;
 
 namespace DevKit.UI.MVVM
 {
     /// <summary>
-    /// Binder для связывания View с ViewModel, подразумевающий ViewModel Transient (создаётся каждый раз при открытии).
-    /// Здесь указывается TViewModel, с которой работает View. Чтобы работать с конкретной ViewModel,
-    /// а не с абстрактной (если так указано во View, пр.: <see cref="View{IViewModel}"/>), используйте класс с расширенными
-    /// generic-параметрами (с разделением типов ViewModel на конкретный (который мы хотим передать View) и абстрактный
-    /// (который требует View)).
+    /// Binder for View and ViewModel, assuming a Transient ViewModel (created each time it is opened).
+    /// Specifies the TViewModel with which the View works. To work with a concrete ViewModel
+    /// rather than an abstract one (if specified in the View, e.g., <see cref="IView{TViewModel}"/>), 
+    /// use the class with extended generic parameters (<see cref="TransientBinder{TView, TViewModel, AViewModel}"/>).
     /// </summary>
     public abstract class TransientBinder<TView, TViewModel> : TransientBinder<TView, TViewModel, TViewModel>
         where TView : IView<TViewModel>
@@ -19,10 +19,10 @@ namespace DevKit.UI.MVVM
     }
 
     /// <summary>
-    /// Binder для связывания View с ViewModel, подразумевающий ViewModel Transient (создаётся каждый раз при открытии).
-    /// Здесь View может иметь зависимость от абстрактной AViewModel (Пр.: <see cref="IView{AViewModel}"/>),
-    /// при этом в реальности быть связана с конкретной TViewModel, реализующей/наследуемой от
-    /// AViewModel (where AViewModel : IViewModel)
+    /// Binder for View and ViewModel, assuming a Transient ViewModel (created each time it is opened).
+    /// Here the View may have a dependency on an abstract AViewModel (e.g., <see cref="IView{AViewModel}"/>),
+    /// while actually being linked to a concrete TViewModel that implements/inherits from
+    /// AViewModel (where AViewModel : IViewModel).
     /// </summary>
     public abstract class TransientBinder<TView, TViewModel, AViewModel> : BaseBinder<TView, TViewModel, AViewModel>
         where TView : IView<AViewModel>
