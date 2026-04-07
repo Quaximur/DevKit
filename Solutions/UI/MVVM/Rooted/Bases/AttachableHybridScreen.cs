@@ -5,18 +5,18 @@ namespace DevKit.UI.MVVM.Bases
     public abstract class AttachableHybridScreen<T> : AttachableHybridView<T>, IScreenAttach<T>
         where T : IScreenViewModel
     {
-        public override int ToolkitSortOrder => _toolkitPriority;
-        public override int CanvasSortOrder => _canvasPriority;
+        public override int ToolkitSortOrder => _toolkitLayer;
+        public override int CanvasSortOrder => _canvasLayer;
 
         [SerializeField]
-        [Tooltip("Views with higher priority are placed on top of views with lower priority, " +
+        [Tooltip("Views with higher layer are placed on top of views with lower layer, " +
                  "making them visually closer to the user.")]
-        protected int _toolkitPriority;
+        protected int _toolkitLayer;
 
         [SerializeField]
-        [Tooltip("Views with higher priority are placed on top of views with lower priority, " +
+        [Tooltip("Views with higher layer are placed on top of views with lower layer, " +
                  "making them visually closer to the user.")]
-        protected int _canvasPriority;
+        protected int _canvasLayer;
 
         protected IOpenStateController _openStateController;
 
@@ -43,7 +43,7 @@ namespace DevKit.UI.MVVM.Bases
 
         protected virtual IOpenStateController GetOpenStateController()
         {
-            return new BaseOpenStateController();
+            return new OpenStateController();
         }
 
         public override void Dispose()

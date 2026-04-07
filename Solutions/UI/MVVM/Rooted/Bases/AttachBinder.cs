@@ -3,7 +3,7 @@ using DevKit.Utils;
 namespace DevKit.UI.MVVM.Bases
 {
     public abstract class AttachBinder<TView, TViewModel> : AttachBinder<TView, TViewModel, TViewModel>
-        where TView : BaseView, IScreenAttach<TViewModel>
+        where TView : IScreenAttach<TViewModel>, IDisposableNotifier
         where TViewModel : IScreenViewModel
     {
         protected AttachBinder(IRootUIBinder rootUIBinder) : base(rootUIBinder)
@@ -12,7 +12,7 @@ namespace DevKit.UI.MVVM.Bases
     }
 
     public abstract class AttachBinder<TView, TViewModel, AViewModel> : BaseBinder<TView, TViewModel, AViewModel>
-        where TView : BaseView, IScreenAttach<AViewModel>
+        where TView : IScreenAttach<AViewModel>, IDisposableNotifier
         where TViewModel : AViewModel
         where AViewModel : IScreenViewModel
     {

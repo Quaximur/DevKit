@@ -7,7 +7,7 @@ namespace DevKit.UI.MVVM.Bases
     /// with custom View and ViewModel factories.
     /// </summary>
     public class SimpleAttachBinder<TView, TViewModel> : AttachBinder<TView, TViewModel>
-        where TView : BaseView, IScreenAttach<TViewModel>
+        where TView : IScreenAttach<TViewModel>, IDisposableNotifier
         where TViewModel : IScreenViewModel
     {
         private readonly Func<TViewModel> _viewModelFactory;

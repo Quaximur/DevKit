@@ -29,7 +29,8 @@ namespace DevKit.UI.MVVM.Bases
         }
 
         /// <summary>
-        /// Initializes event subscriptions for close controls (<see cref="_closeButton"/>, <see cref="_closeBackground"/>)
+        /// Initializes event subscriptions for close controls (<see cref="_closeButton"/>,
+        /// <see cref="_closeBackground"/>)
         /// </summary>
         protected virtual void BindClosingControls()
         {

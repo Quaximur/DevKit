@@ -1,0 +1,25 @@
+{
+    "name": "DevKit.Reflex",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d97c239f2f13de7499d761d5802afb3c",
+        "GUID:1530a967b84cfb44dbdd5e8a1989764f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "DEVKIT_REFLEX"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.gustavopsantos.reflex",
+            "expression": "",
+            "define": "DEVKIT_REFLEX"
+        }
+    ],
+    "noEngineReferences": false
+}

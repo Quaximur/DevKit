@@ -11,20 +11,20 @@ namespace DevKit.UI.MVVM.Bases
                 if (value == null)
                     return;
 
-                OnOpenedSignal += value;
+                OnOpenStateChangedSignal += value;
                 value(_isOpened);
             }
             remove
             {
-                OnOpenedSignal -= value;
+                OnOpenStateChangedSignal -= value;
             }
         }
 
         public event Action OnClosingCompleted;
 
-        protected event Action<bool> OnOpenedSignal;
+        protected Action<bool> OnOpenStateChangedSignal;
 
-        private bool _isOpened = false;
+        protected bool _isOpened = false;
 
         public virtual void Open()
         {
@@ -32,7 +32,7 @@ namespace DevKit.UI.MVVM.Bases
                 return;
 
             _isOpened = true;
-            OnOpenedSignal?.Invoke(_isOpened);
+            OnOpenStateChangedSignal?.Invoke(_isOpened);
         }
 
         public virtual void StartClosing()
@@ -41,7 +41,7 @@ namespace DevKit.UI.MVVM.Bases
                 return;
                 
             _isOpened = false;
-            OnOpenedSignal?.Invoke(_isOpened);
+            OnOpenStateChangedSignal?.Invoke(_isOpened);
         }
 
         /// <summary>
