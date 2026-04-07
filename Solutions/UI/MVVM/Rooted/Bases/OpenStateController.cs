@@ -1,6 +1,6 @@
 namespace DevKit.UI.MVVM.Bases
 {
-    public class BaseOpenStateController : IOpenStateController
+    public class OpenStateController : IOpenStateController
     {
         public bool IsOpened;
 

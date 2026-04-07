@@ -5,12 +5,12 @@ namespace DevKit.UI.MVVM.Bases
     public abstract class AttachableToolkitScreen<T> : AttachableToolkitView<T>, IScreenAttach<T> 
         where T : IScreenViewModel
     {
-        public override int ToolkitSortOrder => _priority;
+        public override int ToolkitSortOrder => _layer;
 
         [SerializeField]
-        [Tooltip("Views with higher priority are placed on top of views with lower priority, " +
+        [Tooltip("Views with higher layer are placed on top of views with lower layer, " +
                  "making them visually closer to the user.")]
-        protected int _priority;
+        protected int _layer;
         
         protected IOpenStateController _openStateController;
 
@@ -37,7 +37,7 @@ namespace DevKit.UI.MVVM.Bases
 
         protected virtual IOpenStateController GetOpenStateController()
         {
-            return new BaseOpenStateController();
+            return new OpenStateController();
         }
 
         public override void Dispose()
