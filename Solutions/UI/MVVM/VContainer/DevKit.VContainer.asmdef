@@ -11,12 +11,14 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "DEVKIT_VCONTAINER"
+    ],
     "versionDefines": [
         {
             "name": "jp.hadashikick.vcontainer",
             "expression": "",
-            "define": ""
+            "define": "DEVKIT_VCONTAINER"
         }
     ],
     "noEngineReferences": false

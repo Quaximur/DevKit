@@ -2,11 +2,12 @@ using System;
 using DevKit.UI.MVVM.Bases;
 using UnityEngine;
 using VContainer;
+
 using Object = UnityEngine.Object;
 
 namespace DevKit.UI.MVVM
 {
-    public static class MvvmVContainerExtensions
+    public static class MVVMVContainerExtensions
     {
         public static IContainerBuilder RegisterMVVM<TView, TViewModel>(this IContainerBuilder builder,
             TView viewPrefab, 
