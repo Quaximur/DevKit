@@ -4,10 +4,10 @@ namespace DevKit.UI.MVVM.Bases
     {
         public bool IsOpened;
 
-        private IView _view;
+        private IOpenableView _view;
         private IScreenViewModel _viewModel;
 
-        public void Bind(IView view, IScreenViewModel viewModel)
+        public void Bind(IOpenableView view, IScreenViewModel viewModel)
         {
             _view = view;
             _viewModel = viewModel;
@@ -29,12 +29,12 @@ namespace DevKit.UI.MVVM.Bases
 
         public void OnOpening()
         {
-            _view.Show();
+            _view.OnOpening();
         }
 
         public void OnClosing()
         {
-            _viewModel.CompleteClosing();
+            _view.OnClosing();
         }
 
         public void Dispose()

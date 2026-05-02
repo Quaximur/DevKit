@@ -4,7 +4,7 @@ namespace DevKit.UI.MVVM.Bases
 {
     public interface IOpenStateController : IDisposable
     {
-        public void Bind(IView view, IScreenViewModel viewModel);
+        public void Bind(IOpenableView view, IScreenViewModel viewModel);
 
         public void OnOpenStateChanged(bool isOpened);
 

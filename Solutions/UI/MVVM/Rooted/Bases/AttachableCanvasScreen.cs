@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DevKit.UI.MVVM.Bases
 {
-    public abstract class AttachableCanvasScreen<T> : AttachableCanvasView<T>, IScreenAttach<T>
+    public abstract class AttachableCanvasScreen<T> : AttachableCanvasView<T>, IScreenAttach<T>, IOpenableView
         where T : IScreenViewModel
     {
         public override int CanvasSortOrder => _layer;
@@ -19,20 +19,15 @@ namespace DevKit.UI.MVVM.Bases
             _openStateController ??= GetOpenStateController();
             _openStateController.Bind(this, viewModel);
         }
-
-        protected virtual void OnOpenStateChanged(bool isOpened)
+        
+        public virtual void OnOpening()
         {
-            _openStateController.OnOpenStateChanged(isOpened);
+            Show();
         }
-
-        protected virtual void OnOpening()
+        
+        public virtual void OnClosing()
         {
-            _openStateController.OnOpening();
-        }
-
-        protected virtual void OnClosing()
-        {
-            _openStateController.OnClosing();
+            ViewModel.CompleteClosing();
         }
 
         protected virtual IOpenStateController GetOpenStateController()
