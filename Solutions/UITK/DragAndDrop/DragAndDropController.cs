@@ -8,10 +8,13 @@ namespace DevKit.UITK
 {
     public class DragAndDropController<T>
     {
+        public T DraggingItem { get; private set; }
+        public VisualElement DropTargetElement { get; private set; }
+        public T DropTargetItem { get; private set; }
+
         public event Action<DropData<T>> OnItemDropped;
         public event Action<T> OnItemDragStart;
         public event Action<T> OnGroupHoverStart;
-        public T DraggingItem => _draggedItem;
 
         private readonly VisualElement _root;
         private readonly VisualElement _dropContainer;
@@ -19,12 +22,12 @@ namespace DevKit.UITK
         /// <summary>
         /// If validation failed, the item will be leaved in place
         /// </summary>
-        private readonly Func<T, T, bool> _validation; 
+        private readonly Func<T, T, bool> _validation;
 
         private Label _dragGhost;
         private VisualElement _draggingElement;
-        private VisualElement _dropTargetElement;
-        private T _draggedItem;
+        private T _dropTargetGroupItem;
+
         private bool _isDragging;
         private bool _isLeftInPlace;
         private Vector2 _dragStartPosition;
@@ -103,7 +106,7 @@ namespace DevKit.UITK
             _root.RegisterCallback<PointerUpEvent>(evt => EndDrag(evt));
             _root.RegisterCallback<PointerLeaveEvent>(evt =>
             {
-                _dropTargetElement = null;
+                DropTargetElement = null;
                 CancelDrag(evt.position);
             });
         }
@@ -116,36 +119,36 @@ namespace DevKit.UITK
                     StartDrag(item, element, evt);
             });
 
-            element.RegisterCallback<PointerLeaveEvent>(evt =>
+            element.RegisterCallback<PointerLeaveEvent>((EventCallback<PointerLeaveEvent>)(evt =>
             {
-                if (!_isDragging && IsItemsEqual(_draggedItem, item))
+                if (!_isDragging && IsItemsEqual(DraggingItem, item))
                 {
-                    _draggedItem = default;
+                    this.DraggingItem = default;
                     _draggingElement = null;
                 }
-            });
+            }));
         }
 
         private void StartDrag(T item, VisualElement element, PointerDownEvent evt)
         {
-            if (!IsItemsEqual(_draggedItem, default))
+            if (!IsItemsEqual(DraggingItem, default))
                 return;
 
-            _draggedItem = item;
+            DraggingItem = item;
             _dragStartPosition = evt.position;
             _draggingElement = element;
         }
 
         private void Drag(PointerMoveEvent evt)
         {
-            if (!_isDragging && !IsItemsEqual(_draggedItem, default))
+            if (!_isDragging && !IsItemsEqual(DraggingItem, default))
             {
                 float distance = Vector2.Distance(_dragStartPosition, evt.position);
                 if (distance >= DRAG_THRESHOLD)
                 {
                     _isDragging = true;
                     _dragGhost.style.display = DisplayStyle.Flex;
-                    OnItemDragStart?.Invoke(_draggedItem);
+                    OnItemDragStart?.Invoke(DraggingItem);
                     _draggingElement.AddToClassList("drag-source");
                 }
                 else
@@ -174,7 +177,8 @@ namespace DevKit.UITK
             }
             else if (picked == _dropContainer) // target is root drop container
             {
-                _dropTargetElement = picked;
+                DropTargetElement = picked;
+                DropTargetItem = default;
                 return;
             }
 
@@ -185,7 +189,8 @@ namespace DevKit.UITK
                 return;
             }
             
-            if (!_validation(_draggedItem, targetItem)) // target is a drop container, but dragging is not allowed
+            DropTargetItem = targetItem;
+            if (!_validation(DraggingItem, targetItem)) // target is a drop container, but dragging is not allowed
             {
                 SetLeaveInPlace(true);
                 return;
@@ -196,7 +201,7 @@ namespace DevKit.UITK
             }
 
             // target is a drop container and dragging is allowed
-            _dropTargetElement = container;
+            DropTargetElement = container;
             var linedElement = _getLinedElement(targetItem);
             if (linedElement != null)
             {
@@ -206,7 +211,17 @@ namespace DevKit.UITK
             }
 
             if (ShouldStartGroupExpand(targetItem))
-                OnGroupHoverStart?.Invoke(targetItem);
+            {
+                if (_dropTargetGroupItem == null)
+                {
+                    _dropTargetGroupItem = targetItem;
+                    OnGroupHoverStart?.Invoke(targetItem);
+                }
+            }
+            else
+            {
+                _dropTargetGroupItem = default;
+            }
         }
 
         private void SetLeaveInPlace(bool isLeftInPlace)
@@ -216,13 +231,16 @@ namespace DevKit.UITK
 
         private void SetTargetToNothing()
         {
-            _dropTargetElement = null;
+            DropTargetElement = null;
+            DropTargetItem = default;
+            _dropTargetGroupItem = default;
             _currentDropPosition = DropPosition.After;
         }
 
         private bool ShouldStartGroupExpand(T targetItem)
         {
-            if (_isGroupElement == null || _isExpanded == null || _hasChildren == null) return false;
+            if (_isGroupElement == null || _isExpanded == null || _hasChildren == null)
+                return false;
 
             return _isGroupElement(targetItem) &&
                    !_isExpanded(targetItem) &&
@@ -329,9 +347,9 @@ namespace DevKit.UITK
         {
             if (!_isDragging)
             {
-                if (!IsItemsEqual(_draggedItem, default))
+                if (!IsItemsEqual(DraggingItem, default))
                 {
-                    _draggedItem = default;
+                    DraggingItem = default;
                     _draggingElement = null;
                 }
                 return;
@@ -340,7 +358,7 @@ namespace DevKit.UITK
             OnItemDropped?.Invoke(new DropData<T>
             {
                 IsLeftInPlace = _isLeftInPlace,
-                Dragged = _draggedItem,
+                Dragged = DraggingItem,
                 Target = GetTargetItem(),
                 PointerPosition = pointerPos,
                 DropPosition = _currentDropPosition
@@ -349,20 +367,20 @@ namespace DevKit.UITK
 
             _draggingElement?.RemoveFromClassList("drag-source");
             _draggingElement = null;
-            _draggedItem = default;
-            _dropTargetElement = null;
+            DraggingItem = default;
+            DropTargetElement = null;
             _isDragging = false;
 
             _dragGhost.style.display = DisplayStyle.None;
             ClearDropIndicators();
-            
+
             return;
-            
+
             T GetTargetItem()
             {
-                if (_dropTargetElement != null)
+                if (DropTargetElement != null)
                 {
-                    if (_dropTargetElement.userData == null || _dropTargetElement.userData is not T targetItem)
+                    if (DropTargetElement.userData == null || DropTargetElement.userData is not T targetItem)
                         return default;
                     return targetItem;
                 }
