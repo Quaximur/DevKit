@@ -239,12 +239,11 @@ namespace DevKit.UITK
 
         private bool ShouldStartGroupExpand(T targetItem)
         {
-            if (_isGroupElement == null || _isExpanded == null || _hasChildren == null)
+            if (_isGroupElement == null || _isExpanded == null)
                 return false;
 
             return _isGroupElement(targetItem) &&
                    !_isExpanded(targetItem) &&
-                   _hasChildren(targetItem) &&
                    _currentDropPosition == DropPosition.Inside;
         }
 
@@ -259,7 +258,7 @@ namespace DevKit.UITK
 
             var isGroup = _isGroupElement != null && _isGroupElement(targetItem);
             var isExpanded = isGroup && _isExpanded != null && _isExpanded(targetItem);
-            var hasChildren = isGroup && _hasChildren(targetItem);
+            var hasChildren = isGroup && _hasChildren != null && _hasChildren(targetItem);
 
             if (!isGroup)
             {
