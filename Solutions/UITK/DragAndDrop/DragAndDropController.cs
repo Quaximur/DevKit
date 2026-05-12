@@ -43,10 +43,10 @@ namespace DevKit.UITK
 
         private enum DropZone
         {
-            Top,
-            CenterInside,
-            CenterBottom,
-            Bottom
+            Top, // line before the item
+            CenterInside, // no line
+            CenterBottom, // line after the item`s children
+            Bottom // line after the item
         }
 
         public DragAndDropController(
@@ -121,7 +121,7 @@ namespace DevKit.UITK
 
             element.RegisterCallback<PointerLeaveEvent>((EventCallback<PointerLeaveEvent>)(evt =>
             {
-                if (!_isDragging && IsItemsEqual(DraggingItem, item))
+                if (!_isDragging && IsItemEqual(DraggingItem, item))
                 {
                     this.DraggingItem = default;
                     _draggingElement = null;
@@ -131,7 +131,7 @@ namespace DevKit.UITK
 
         private void StartDrag(T item, VisualElement element, PointerDownEvent evt)
         {
-            if (!IsItemsEqual(DraggingItem, default))
+            if (!IsItemEqual(DraggingItem, default))
                 return;
 
             DraggingItem = item;
@@ -141,7 +141,7 @@ namespace DevKit.UITK
 
         private void Drag(PointerMoveEvent evt)
         {
-            if (!_isDragging && !IsItemsEqual(DraggingItem, default))
+            if (!_isDragging && !IsItemEqual(DraggingItem, default))
             {
                 float distance = Vector2.Distance(_dragStartPosition, evt.position);
                 if (distance >= DRAG_THRESHOLD)
@@ -346,7 +346,7 @@ namespace DevKit.UITK
         {
             if (!_isDragging)
             {
-                if (!IsItemsEqual(DraggingItem, default))
+                if (!IsItemEqual(DraggingItem, default))
                 {
                     DraggingItem = default;
                     _draggingElement = null;
@@ -387,7 +387,7 @@ namespace DevKit.UITK
             }
         }
 
-        public bool IsItemsEqual(T item1, T item2)
+        public bool IsItemEqual(T item1, T item2)
         {
             return EqualityComparer<T>.Default.Equals(item1, item2);
         }
