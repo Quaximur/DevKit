@@ -5,6 +5,9 @@ namespace DevKit.UndoRedo
 {
     public class CommandBuffer
     {
+        public event Action<int> OnUndoCountEvent;
+        public event Action<int> OnRedoCountEvent;
+
         public IReadOnlyList<IBufferCommand> UndoCommandsBuffer => _undoCommandsBuffer;
         public IReadOnlyList<IBufferCommand> RedoCommandsBuffer => _redoCommandsBuffer;
 
@@ -24,7 +27,10 @@ namespace DevKit.UndoRedo
             if (command != null)
             {
                 if (_redoCommandsBuffer.Count > 0)
+                {
                     _redoCommandsBuffer.Clear();
+                    OnRedoCountEvent?.Invoke(0);
+                }
 
                 command.Execute();
                 PushCommandToUndoBuffer(command);
@@ -39,8 +45,11 @@ namespace DevKit.UndoRedo
                 return;
 
             var commandToUndo = _undoCommandsBuffer.RemoveLast();
-            PushCommandToRedoBuffer(commandToUndo);
             commandToUndo?.Rollback();
+            OnUndoCountEvent?.Invoke(_undoCommandsBuffer.Count);
+
+            PushCommandToRedoBuffer(commandToUndo);
+
             callback?.Invoke();
         }
 
@@ -50,8 +59,10 @@ namespace DevKit.UndoRedo
                 return;
 
             var commandToRedo = _redoCommandsBuffer.RemoveLast();
-            PushCommandToUndoBuffer(commandToRedo);
             commandToRedo?.Execute();
+            OnRedoCountEvent?.Invoke(_redoCommandsBuffer.Count);
+
+            PushCommandToUndoBuffer(commandToRedo);
             callback?.Invoke();
         }
 
@@ -59,6 +70,8 @@ namespace DevKit.UndoRedo
         {
             _undoCommandsBuffer.Clear();
             _redoCommandsBuffer.Clear();
+            OnUndoCountEvent?.Invoke(0);
+            OnRedoCountEvent?.Invoke(0);
         }
 
         private void PushCommandToUndoBuffer(IBufferCommand command)
@@ -67,6 +80,7 @@ namespace DevKit.UndoRedo
                 _undoCommandsBuffer.RemoveFirst();
 
             _undoCommandsBuffer.AddLast(command);
+            OnUndoCountEvent?.Invoke(_undoCommandsBuffer.Count);
         }
 
         private void PushCommandToRedoBuffer(IBufferCommand command)
@@ -75,6 +89,7 @@ namespace DevKit.UndoRedo
                 _redoCommandsBuffer.RemoveFirst();
 
             _redoCommandsBuffer.AddLast(command);
+            OnRedoCountEvent?.Invoke(_redoCommandsBuffer.Count);
         }
     }
 }
