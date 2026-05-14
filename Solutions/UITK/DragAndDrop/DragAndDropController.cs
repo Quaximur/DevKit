@@ -119,14 +119,14 @@ namespace DevKit.UITK
                     StartDrag(item, element, evt);
             });
 
-            element.RegisterCallback<PointerLeaveEvent>((EventCallback<PointerLeaveEvent>)(evt =>
+            element.RegisterCallback<PointerLeaveEvent>(_ =>
             {
                 if (!_isDragging && IsItemEqual(DraggingItem, item))
                 {
-                    this.DraggingItem = default;
+                    DraggingItem = default;
                     _draggingElement = null;
                 }
-            }));
+            });
         }
 
         private void StartDrag(T item, VisualElement element, PointerDownEvent evt)
@@ -231,6 +231,7 @@ namespace DevKit.UITK
 
         private void SetTargetToNothing()
         {
+            SetLeaveInPlace(false);
             DropTargetElement = null;
             DropTargetItem = default;
             _dropTargetGroupItem = default;
