@@ -45,6 +45,8 @@ namespace DevKit.Utils.Editor
                 }
             };
 
+            listView.style.maxHeight = 600;
+
             listView.Q<TextField>(name: BaseListView.arraySizeFieldUssClassName)?.SetEnabled(false);
 
             root.TrackPropertyValue(listProperty, _ =>
