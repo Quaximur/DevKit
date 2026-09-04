@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DevKit.Saves
 {
     public class SimpleSaveSystem : ISaveSystem
@@ -30,6 +32,11 @@ namespace DevKit.Saves
             var serializedData = _storage.Read(key);
 
             return serializedData;
+        }
+
+        public IReadOnlyList<string> GetKeys(string prefix)
+        {
+            return _storage.GetKeys(prefix);
         }
 
         public void Delete(string key)

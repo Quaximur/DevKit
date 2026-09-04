@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DevKit.Saves
 {
     public interface IDataStorage
@@ -6,5 +8,6 @@ namespace DevKit.Saves
         public string Read(string key);
         public void Delete(string key);
         public bool Exists(string key);
+        public IReadOnlyList<string> GetKeys(string prefix);
     }
 }

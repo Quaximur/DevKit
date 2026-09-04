@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace DevKit.Saves
@@ -28,6 +30,10 @@ namespace DevKit.Saves
 
             try
             {
+                var directoryPath = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+                    
                 File.WriteAllText(path, serializedData);
             }
             catch (Exception ex)
@@ -58,6 +64,18 @@ namespace DevKit.Saves
             var exists = File.Exists(path);
 
             return exists;
+        }
+
+        public IReadOnlyList<string> GetKeys(string prefix)
+        {
+            var directory = Path.Combine(_basePath, prefix);
+            if (!Directory.Exists(directory))
+                return Array.Empty<string>();
+
+            return Directory.GetFiles(directory, $"*.{_fileExtension}")
+                .Select(path => Path.ChangeExtension(Path.GetRelativePath(_basePath, path), null)
+                    .Replace(Path.DirectorySeparatorChar, '/'))
+                .ToArray();
         }
 
         private string GetPath(string key)
