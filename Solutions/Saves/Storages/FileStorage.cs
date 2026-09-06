@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DevKit.Utils;
 using UnityEngine;
 
 namespace DevKit.Saves
@@ -33,7 +34,7 @@ namespace DevKit.Saves
                 var directoryPath = Path.GetDirectoryName(path);
                 if (!Directory.Exists(directoryPath))
                     Directory.CreateDirectory(directoryPath);
-                    
+
                 File.WriteAllText(path, serializedData);
             }
             catch (Exception ex)
@@ -45,9 +46,18 @@ namespace DevKit.Saves
         public string Read(string key)
         {
             var path = GetPath(key);
-            var text = File.ReadAllText(path);
 
-            return text;
+            try
+            {
+                var text = File.ReadAllText(path);
+
+                return text;
+            }
+            catch (Exception e)
+            {
+                FLogger.LogError<FileStorage>(e.Message);
+                return null;
+            }
         }
 
         public void Delete(string key)
