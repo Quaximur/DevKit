@@ -19,6 +19,16 @@ namespace DevKit.Saves
             _storage.Write(key, serializedData);
         }
 
+        public void SaveBytes(string key, byte[] data, string extension)
+        {
+            _storage.WriteBytes(key, data, extension);
+        }
+
+        public byte[] LoadBytes(string key, string extension)
+        {
+            return _storage.ReadBytes(key, extension);
+        }
+
         public T Load<T>(string key)
         {
             var serializedData = _storage.Read(key);

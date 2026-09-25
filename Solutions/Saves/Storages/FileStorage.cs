@@ -27,7 +27,7 @@ namespace DevKit.Saves
 
         public void Write(string key, string serializedData)
         {
-            var path = GetPath(key);
+            var path = GetPath(key, _fileExtension);
 
             try
             {
@@ -43,9 +43,44 @@ namespace DevKit.Saves
             }
         }
 
+        public void WriteBytes(string key, byte[] data, string extension)
+        {
+            var path = GetPath(key, extension);
+
+            try
+            {
+                var directoryPath = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
+                File.WriteAllBytes(path, data);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"FileStorage: Binary save operation failed: {ex.Message}");
+            }
+        }
+
+        public byte[] ReadBytes(string key, string extension)
+        {
+            var path = GetPath(key, extension);
+            if (!File.Exists(path))
+                return null;
+
+            try
+            {
+                return File.ReadAllBytes(path);
+            }
+            catch (Exception ex)
+            {
+                FLogger.LogError<FileStorage>(ex.Message);
+                return null;
+            }
+        }
+
         public string Read(string key)
         {
-            var path = GetPath(key);
+            var path = GetPath(key, _fileExtension);
 
             try
             {
@@ -62,7 +97,7 @@ namespace DevKit.Saves
 
         public void Delete(string key)
         {
-            var path = GetPath(key);
+            var path = GetPath(key, _fileExtension);
 
             if (File.Exists(path))
                 File.Delete(path);
@@ -70,7 +105,7 @@ namespace DevKit.Saves
 
         public bool Exists(string key)
         {
-            var path = GetPath(key);
+            var path = GetPath(key, _fileExtension);
             var exists = File.Exists(path);
 
             return exists;
@@ -88,9 +123,9 @@ namespace DevKit.Saves
                 .ToArray();
         }
 
-        private string GetPath(string key)
+        private string GetPath(string key, string extension)
         {
-            var path = Path.Combine(_basePath, String.Concat(key, ".", _fileExtension));
+            var path = Path.Combine(_basePath, String.Concat(key, ".", extension));
             return path;
         }
     }
